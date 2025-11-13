@@ -9,7 +9,7 @@ curl $URL \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $API_KEY" \
   -d '{
-    "model": "$MODEL_NAME",
+    "model": "gemma3",
     "messages": [
       {
         "role": "user",
@@ -23,14 +23,14 @@ curl $URL \
 
 ### Image Query Example (Multimodal/Vision)
 
-Use this curl command for a text + image query. Replace `$URL` with the base endpoint URL (e.g., `https://qwen.dwani.ai/v1/chat/completions`), `$MODEL_NAME` with your model (e.g., `gemma3`), `$API_KEY` with your actual API key, and replace `BASE64_ENCODED_IMAGE` with the base64-encoded string of your image (e.g., from `base64 -i image.jpg`). You can use a URL instead of base64 if the API supports it.
+Use this curl command for a text + image query. Replace `$URL` with the base endpoint URL (e.g., `https://<qwen-based-model>.dwani.ai/v1/chat/completions`), `$MODEL_NAME` with your model (e.g., `gemma3`), `$API_KEY` with your actual API key, and replace `BASE64_ENCODED_IMAGE` with the base64-encoded string of your image (e.g., from `base64 -i image.jpg`). You can use a URL instead of base64 if the API supports it.
 
 ```
 curl $URL \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $API_KEY" \
   -d '{
-    "model": "$MODEL_NAME",
+    "model": "gemma3",
     "messages": [
       {
         "role": "user",
