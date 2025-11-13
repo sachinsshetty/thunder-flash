@@ -20,3 +20,7 @@
     - Recon - https://github.com/dwani-ai/llm-recipes/tree/main/python/reconaissance
     - Aquila - https://github.com/dwani-ai/llm-recipes/tree/main/python/aquila
     
+
+--
+
+docker compose -f server-compose.yml up -d
