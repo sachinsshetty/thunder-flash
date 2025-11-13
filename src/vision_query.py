@@ -17,7 +17,7 @@ client = OpenAI(
 )
 
 class TextQueryRequest(BaseModel):
-    model: str = "gemma3"
+    model: str = "gemma3                                                                                                                                                                                                                                                                       "
     prompt: str
     max_tokens: Optional[int] = 300
 
@@ -108,6 +108,202 @@ async def upload_image_query(
         return {"response": response.choices[0].message.content}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+from fastapi import FastAPI, UploadFile, File, Form, Query, Header, HTTPException, Response
+from fastapi.responses import StreamingResponse, FileResponse
+from pydantic import BaseModel
+from typing import Optional, Dict, Any
+import io
+import uvicorn
+
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str
+    expires_in: int
+
+class RegisterRequest(BaseModel):
+    app_name: str
+    # Add other fields as needed
+
+class TranscriptionResponse(BaseModel):
+    transcription: str
+    language: str
+
+class ChatRequest(BaseModel):
+    message: str
+    session_id: Optional[str] = None
+
+class ChatResponse(BaseModel):
+    response: str
+    session_id: str
+
+class TranslationRequest(BaseModel):
+    text: str
+    source_lang: str
+    target_lang: str
+
+class TranslationResponse(BaseModel):
+    translated_text: str
+    source_lang: str
+    target_lang: str
+
+class VisualQueryResponse(BaseModel):
+    query_result: str
+    src_lang: str
+    tgt_lang: str
+
+class ExtractTextResponse(BaseModel):
+    extracted_text: str
+    page_number: int
+    language: str
+
+class PdfSummaryResponse(BaseModel):
+    summary: str
+    tgt_lang: str
+    model: str
+
+# Dummy binary data for TTS and SpeechToSpeech (in real impl, generate actual audio)
+DUMMY_AUDIO = b"dummy audio bytes"
+
+# API Key validation (placeholder - in real impl, validate against a secret)
+def validate_api_key(api_key: str = Header(None)) -> str:
+    if not api_key or api_key != "your-secret-api-key":  # Replace with actual validation
+        raise HTTPException(status_code=401, detail="Invalid API Key")
+    return api_key
+
+@app.post("/v1/token", response_model=TokenResponse)
+async def login(login_request: LoginRequest, api_key: str = Header(None)):
+    validate_api_key(api_key)
+    # Dummy login logic
+    return TokenResponse(
+        access_token="dummy_token",
+        token_type="bearer",
+        expires_in=3600
+    )
+
+@app.post("/v1/app/register", response_model=TokenResponse)
+async def app_register(register_request: RegisterRequest, api_key: str = Header(None)):
+    validate_api_key(api_key)
+    # Dummy register logic
+    return TokenResponse(
+        access_token="dummy_app_token",
+        token_type="bearer",
+        expires_in=3600
+    )
+
+@app.post("/v1/transcribe/", response_model=TranscriptionResponse)
+async def transcribe_audio(
+    audio: UploadFile = File(...),
+    language: str = Query(...),
+    api_key: str = Header(None)
+):
+    validate_api_key(api_key)
+    # Dummy transcription - read file content
+    content = await audio.read()
+    return TranscriptionResponse(
+        transcription=f"Transcribed: {content[:100].decode('utf-8', errors='ignore')}...",
+        language=language
+    )
+
+@app.post("/v1/indic_chat", response_model=ChatResponse)
+async def chat(chat_request: ChatRequest, api_key: str = Header(None)):
+    validate_api_key(api_key)
+    # Dummy chat logic
+    return ChatResponse(
+        response=f"Response to: {chat_request.message}",
+        session_id="dummy_session"
+    )
+
+@app.post("/v1/audio/speech")
+async def text_to_speech(
+    input_text: str = Query(...),
+    language: str = Query(...),
+    api_key: str = Header(None)
+):
+    validate_api_key(api_key)
+    # Dummy TTS - return dummy audio
+    return StreamingResponse(
+        io.BytesIO(DUMMY_AUDIO),
+        media_type="audio/wav",
+        headers={"Content-Disposition": "attachment; filename=tts.wav"}
+    )
+
+@app.post("/v1/translate", response_model=TranslationResponse)
+async def translate(translation_request: TranslationRequest, api_key: str = Header(None)):
+    validate_api_key(api_key)
+    # Dummy translation
+    return TranslationResponse(
+        translated_text=f"Translated: {translation_request.text}",
+        source_lang=translation_request.source_lang,
+        target_lang=translation_request.target_lang
+    )
+
+@app.post("/v1/indic_visual_query", response_model=VisualQueryResponse)
+async def visual_query(
+    file: UploadFile = File(...),
+    query: str = Form(...),
+    src_lang: str = Query(...),
+    tgt_lang: str = Query(...),
+    api_key: str = Header(None)
+):
+    validate_api_key(api_key)
+    # Dummy visual query
+    content = await file.read()
+    return VisualQueryResponse(
+        query_result=f"Visual query result for: {query}",
+        src_lang=src_lang,
+        tgt_lang=tgt_lang
+    )
+
+@app.post("/v1/speech_to_speech")
+async def speech_to_speech(
+    language: str = Query(...),
+    file: UploadFile = File(...),
+    api_key: str = Header(None)
+):
+    validate_api_key(api_key)
+    # Dummy speech to speech
+    return StreamingResponse(
+        io.BytesIO(DUMMY_AUDIO),
+        media_type="audio/wav",
+        headers={"Content-Disposition": "attachment; filename=stt.wav"}
+    )
+
+@app.post("/v1/extract-text", response_model=ExtractTextResponse)
+async def extract_text(
+    file: UploadFile = File(...),
+    page_number: int = Query(...),
+    language: str = Query(...),
+    api_key: str = Header(None)
+):
+    validate_api_key(api_key)
+    # Dummy text extraction
+    content = await file.read()
+    return ExtractTextResponse(
+        extracted_text=f"Extracted from page {page_number}: {content[:100].decode('utf-8', errors='ignore')}...",
+        page_number=page_number,
+        language=language
+    )
+
+@app.post("/v1/indic-summarize-pdf-all", response_model=PdfSummaryResponse)
+async def summarize_pdf(
+    file: UploadFile = File(...),
+    tgt_lang: str = Form(...),
+    model: str = Form(...),
+    api_key: str = Header(None)
+):
+    validate_api_key(api_key)
+    # Dummy PDF summary
+    return PdfSummaryResponse(
+        summary="Dummy PDF summary",
+        tgt_lang=tgt_lang,
+        model=model
+    )
 
 if __name__ == "__main__":
     import uvicorn
