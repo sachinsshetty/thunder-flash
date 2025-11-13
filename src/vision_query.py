@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, File, UploadFile, Form
 from pydantic import BaseModel
 from openai import OpenAI
 import base64
@@ -17,12 +17,12 @@ client = OpenAI(
 )
 
 class TextQueryRequest(BaseModel):
-    model: str = "gpt-4o"
+    model: str = "gemma3"
     prompt: str
     max_tokens: Optional[int] = 300
 
 class ImageQueryRequest(BaseModel):
-    model: str = "gpt-4o"
+    model: str = "gemma3"
     text: str
     image_url: str  # Can be HTTP URL or base64 data URL like "data:image/jpeg;base64,{base64_data}"
     max_tokens: Optional[int] = 300
@@ -70,6 +70,44 @@ async def image_query(request: ImageQueryRequest):
 def encode_image(image_path: str) -> str:
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')
+
+
+@app.post("/upload_image_query")
+async def upload_image_query(
+    model: str = Form("gemma3"),
+    text: str = Form(...),
+    file: UploadFile = File(...),
+    max_tokens: Optional[int] = Form(300)
+):
+    try:
+        # Validate file is an image
+        if not file.content_type.startswith("image/"):
+            raise HTTPException(status_code=400, detail="File must be an image")
+
+        # Read and encode the image to base64
+        contents = await file.read()
+        base64_image = base64.b64encode(contents).decode('utf-8')
+        image_url = f"data:{file.content_type};base64,{base64_image}"
+
+        response = client.chat.completions.create(
+            model=model,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": text},
+                        {
+                            "type": "image_url",
+                            "image_url": {"url": image_url},
+                        },
+                    ],
+                }
+            ],
+            max_tokens=max_tokens,
+        )
+        return {"response": response.choices[0].message.content}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn
