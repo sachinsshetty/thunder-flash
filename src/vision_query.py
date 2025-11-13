@@ -1,56 +1,76 @@
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 from openai import OpenAI
+import base64
+import os
+from typing import Optional
 
-# Initialize with custom base_url (e.g., for a proxy or Azure endpoint)
+app = FastAPI(title="OpenAI Query Endpoints", description="Endpoints for text and image queries using OpenAI API")
+
+# Initialize OpenAI client (use environment variables for security in production)
+API_KEY = os.getenv("DWANI_API_KEY", "your-api-key-here")
+BASE_URL = os.getenv("DWANI_BASE_URL", "https://your-custom-endpoint.com/v1")
+
 client = OpenAI(
-    api_key="your-api-key-here",
-    base_url="https://your-custom-endpoint.com/v1"  # Add trailing slash if required by your endpoint
+    api_key=API_KEY,
+    base_url=BASE_URL
 )
 
-# Now use it for text or image processing as before
-response = client.chat.completions.create(
-    model="gpt-4o",
-    messages=[{"role": "user", "content": "Explain quantum computing."}]
-)
-print(response.choices[0].message.content)
+class TextQueryRequest(BaseModel):
+    model: str = "gpt-4o"
+    prompt: str
+    max_tokens: Optional[int] = 300
 
+class ImageQueryRequest(BaseModel):
+    model: str = "gpt-4o"
+    text: str
+    image_url: str  # Can be HTTP URL or base64 data URL like "data:image/jpeg;base64,{base64_data}"
+    max_tokens: Optional[int] = 300
 
-from openai import OpenAI
-import base64  # For encoding local images if needed
+@app.post("/text_query")
+async def text_query(request: TextQueryRequest):
+    try:
+        response = client.chat.completions.create(
+            model=request.model,
+            messages=[{"role": "user", "content": request.prompt}],
+            max_tokens=request.max_tokens,
+        )
+        return {"response": response.choices[0].message.content}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-# Initialize with custom base_url
-client = OpenAI(
-    api_key="your-api-key-here",
-    base_url="https://your-custom-endpoint.com/v1"  # e.g., for proxy or Azure
-)
+@app.post("/image_query")
+async def image_query(request: ImageQueryRequest):
+    try:
+        # Validate if it's a base64 data URL or regular URL
+        if not (request.image_url.startswith("http") or request.image_url.startswith("data:")):
+            raise HTTPException(status_code=400, detail="image_url must be a valid HTTP URL or base64 data URL")
 
-# Function to encode a local image to base64 (optional; you can also use a URL)
-def encode_image(image_path):
+        response = client.chat.completions.create(
+            model=request.model,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": request.text},
+                        {
+                            "type": "image_url",
+                            "image_url": {"url": request.image_url},
+                        },
+                    ],
+                }
+            ],
+            max_tokens=request.max_tokens,
+        )
+        return {"response": response.choices[0].message.content}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Optional: Function to encode local image to base64 (can be called separately or integrated)
+def encode_image(image_path: str) -> str:
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')
 
-# Image analysis example (text query + image)
-# Option 1: Using an image URL
-response = client.chat.completions.create(
-    model="gpt-4o",  # Or "gpt-4-vision-preview" for legacy
-    messages=[
-        {
-            "role": "user",
-            "content": [
-                {"type": "text", "text": "Describe the key elements in this image and suggest a caption."},
-                {
-                    "type": "image_url",
-                    "image_url": {
-                        "url": "https://example.com/your-image.jpg",  # Public URL to the image
-                    },
-                },
-            ],
-        }
-    ],
-    max_tokens=300,
-)
-
-print(response.choices[0].message.content)
-
-# Option 2: Using a local image file (base64-encoded)
-# base64_image = encode_image("path/to/your/local/image.jpg")
-# Then replace the "url" above with: "url": f"data:image/jpeg;base64,{base64_image}"
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
