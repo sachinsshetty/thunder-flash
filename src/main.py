@@ -10,6 +10,14 @@ from routers.v1 import router as v1_router
 
 app = FastAPI(title="Thunder EDTH", description="Danger Detection")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(core_router)
 app.include_router(v1_router)
 
