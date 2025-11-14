@@ -1,3 +1,27 @@
+
+Validate image - to get weapom info
+
+curl -X 'POST' \
+  'https://localhost:8000/upload_image_query' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: multipart/form-data' \
+  -F 'text=what is this ?' \
+  -F 'system_prompt=You are Weapons officer, who can identify military items accurately. Keep response to a single line, identify the weapon and its type' \
+  -F 'file=@land-mine.jpeg;type=image/jpeg'
+
+{
+  "response": "M1943 60mm mortar round, high explosive type."
+}
+
+
+
+get user_captures based on range 
+
+
+curl -X GET "http://localhost:8000/v1/user-captures/time-range/?start_time=2025-11-14T00:00:00&end_time=2025-11-14T23:59:59&skip=0&limit=10" \
+  -H "Accept: application/json"
+
+
  create a curl command to use the openai format for text and image query.
 
 ### Text Query Example

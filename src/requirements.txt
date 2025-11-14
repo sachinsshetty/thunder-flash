@@ -1,0 +1,10 @@
+fastapi 
+uvicorn 
+gradio 
+openai 
+pdf2image 
+requests
+pytesseract
+sqlalchemy==2.0.23
+alembic==1.12.1 
+python-multipart
