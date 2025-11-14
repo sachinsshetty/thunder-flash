@@ -55,9 +55,11 @@ async def image_query_endpoint(request: ImageQueryRequest):
 async def upload_image_query_endpoint(
     text: str = Form(...),
     system_prompt: str = Form(DEFAULT_SYSTEM_PROMPT),
+    lat: float = Form(52.5200),
+    lon: float = Form(13.4050),
     file: UploadFile = File(...)
 ):
-    """Handle image upload and query with optional system prompt."""
+    """Handle image upload and query with optional system prompt and GPS coordinates."""
     try:
         if not file.content_type.startswith("image/"):
             raise HTTPException(status_code=400, detail="File must be an image")
@@ -79,6 +81,8 @@ async def upload_image_query_endpoint(
 
         kwargs = {"model": "gemma3", "messages": messages}
 
+
+        print(f"{text} (Location: {lat}, {lon})")
         response = client.chat.completions.create(**kwargs)
         return {"response": response.choices[0].message.content}
     except Exception as e:
