@@ -17,23 +17,18 @@ client = OpenAI(
 )
 
 class TextQueryRequest(BaseModel):
-    model: str = "gemma3                                                                                                                                                                                                                                                                       "
     prompt: str
-    max_tokens: Optional[int] = 300
 
 class ImageQueryRequest(BaseModel):
-    model: str = "gemma3"
     text: str
     image_url: str  # Can be HTTP URL or base64 data URL like "data:image/jpeg;base64,{base64_data}"
-    max_tokens: Optional[int] = 300
 
 @app.post("/text_query")
 async def text_query(request: TextQueryRequest):
     try:
         response = client.chat.completions.create(
-            model=request.model,
+            model="gemma3",
             messages=[{"role": "user", "content": request.prompt}],
-            max_tokens=request.max_tokens,
         )
         return {"response": response.choices[0].message.content}
     except Exception as e:
@@ -47,7 +42,7 @@ async def image_query(request: ImageQueryRequest):
             raise HTTPException(status_code=400, detail="image_url must be a valid HTTP URL or base64 data URL")
 
         response = client.chat.completions.create(
-            model=request.model,
+            model="gemma3",
             messages=[
                 {
                     "role": "user",
@@ -74,10 +69,8 @@ def encode_image(image_path: str) -> str:
 
 @app.post("/upload_image_query")
 async def upload_image_query(
-    model: str = Form("gemma3"),
     text: str = Form(...),
-    file: UploadFile = File(...),
-    max_tokens: Optional[int] = Form(300)
+    file: UploadFile = File(...)
 ):
     try:
         # Validate file is an image
@@ -90,7 +83,7 @@ async def upload_image_query(
         image_url = f"data:{file.content_type};base64,{base64_image}"
 
         response = client.chat.completions.create(
-            model=model,
+            model="gemma3",
             messages=[
                 {
                     "role": "user",
@@ -103,7 +96,6 @@ async def upload_image_query(
                     ],
                 }
             ],
-            max_tokens=max_tokens,
         )
         return {"response": response.choices[0].message.content}
     except Exception as e:
