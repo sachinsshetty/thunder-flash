@@ -25,6 +25,8 @@ class TextQueryRequest(BaseModel):
     prompt: str
     system_prompt: str = "You are Weapons officer, who can identify military items accurately. Keep response to a single line, identify the weapon and its type"  # Optional system prompt; defaults to empty string
 
+
+default_system_prompt = "You are Weapons officer, who can identify military items accurately. Keep response to a single line, identify the weapon and its type"
 @app.post("/text_query")
 async def text_query(request: TextQueryRequest):
     try:
@@ -77,7 +79,7 @@ def encode_image(image_path: str) -> str:
 @app.post("/upload_image_query")
 async def upload_image_query(
     text: str = Form(...),
-    system_prompt: str = Form("You are a helpful assistant that analyzes images and provides insightful responses based on the query."),
+    system_prompt: str = Form(default_system_prompt),
     file: UploadFile = File(...)
 ):
     try:
@@ -165,7 +167,7 @@ async def visual_query(
     api_key: str = Header(None)
 ):
     # Hardcode or provide a default system prompt as string when calling internally
-    default_system_prompt = "You are a helpful assistant that analyzes images and provides insightful responses based on the query."
+
     response_content = await upload_image_query(text=query, system_prompt=default_system_prompt, file=file)
 
     print(response_content)
