@@ -26,6 +26,23 @@ logger = logging.getLogger(__name__)
 def get_db_session(db: Session = Depends(get_db)):
     return db
 
+@router.get("/user-captures/{capture_id}", response_model=UserCaptureResponse)
+def read_user_capture_by_capture_id(capture_id: int, db: Session = Depends(get_db)):
+    """
+    Retrieve a specific user capture by capture_id.
+    """
+    try:
+        capture = db.query(UserCapture).filter(UserCapture.id == capture_id).first()
+        if capture is None:
+            raise HTTPException(status_code=404, detail="User capture not found")
+        return capture
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error retrieving user capture for capture_id {capture_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
 @router.get("/user-captures/", response_model=List[UserCaptureResponse])
 def read_user_captures(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """
