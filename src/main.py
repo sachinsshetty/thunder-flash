@@ -9,7 +9,7 @@ app = FastAPI(title="OpenAI Query Endpoints", description="Endpoints for text an
 
 # Initialize OpenAI client (use environment variables for security in production)
 API_KEY = os.getenv("DWANI_API_KEY", "your-api-key-here")
-BASE_URL = os.getenv("DWANI_BASE_URL", "https://your-custom-endpoint.com/v1")
+BASE_URL = os.getenv("DWANI_API_BASE_URL", "https://your-custom-endpoint.com/v1")
 
 client = OpenAI(
     api_key=API_KEY,
