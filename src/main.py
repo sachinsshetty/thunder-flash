@@ -170,7 +170,7 @@ async def visual_query(
 
     print(response_content)
     return VisualQueryResponse(
-        query_result=response_content["response"],
+        answer=response_content["response"],
         src_lang=src_lang,
         tgt_lang=tgt_lang
     )
