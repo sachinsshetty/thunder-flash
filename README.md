@@ -22,3 +22,6 @@ docker compose -f server-compose.yml up -d
 <!-- 
 docker push dwani/thunder-server:latest
 -->
+- Deploy VLM model
+cd deploy
+docker compose -f vllm-qwen.yml up -d
