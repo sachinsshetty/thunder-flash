@@ -129,11 +129,11 @@ class ChatResponse(BaseModel):
     response: str
     session_id: str
 
-
 class VisualQueryResponse(BaseModel):
-    query_result: str
-    src_lang: str
-    tgt_lang: str
+    answer: str
+
+    class Config:
+        schema_extra = {"example": {"answer": "The image shows a screenshot of a webpage."}}
 
 class ExtractTextResponse(BaseModel):
     extracted_text: str
@@ -167,12 +167,17 @@ async def visual_query(
     default_system_prompt = "You are a helpful assistant that analyzes images and provides insightful responses based on the query."
     response_content = await upload_image_query(text=query, system_prompt=default_system_prompt, file=file)
 
-    print(response_content)
-    return VisualQueryResponse(
-        query_result=response_content["response"],
-        src_lang=src_lang,
-        tgt_lang=tgt_lang
-    )
+    response = response_content
+
+    result = {
+        "extracted_text": response_content,
+        "response": response
+    }
+    if response:
+        result["response"] = response
+
+    return VisualQueryResponse(answer=response_content)
+
 
 @app.post("/v1/extract-text", response_model=ExtractTextResponse)
 async def extract_text(
