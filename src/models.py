@@ -1,10 +1,11 @@
 # models.py
 from pydantic import BaseModel
 from typing import Optional
+from config import DEFAULT_SYSTEM_PROMPT
 
 class TextQueryRequest(BaseModel):
     prompt: str
-    system_prompt: str = "DEFAULT_SYSTEM_PROMPT"  # Will be replaced by import
+    system_prompt: str = DEFAULT_SYSTEM_PROMPT
 
 class ImageQueryRequest(BaseModel):
     text: str

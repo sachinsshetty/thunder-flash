@@ -1,12 +1,13 @@
 # routers/core.py
 from fastapi import APIRouter, HTTPException, File, UploadFile, Form, Query
 from typing import Optional
+import base64
 
 from models import TextQueryRequest, ImageQueryRequest
 from clients import client
 from config import DEFAULT_SYSTEM_PROMPT
 
-router = APIRouter(prefix="/", tags=["core"])
+router = APIRouter(prefix="", tags=["core"])
 
 @router.post("/text_query")
 async def text_query_endpoint(request: TextQueryRequest):
@@ -43,8 +44,7 @@ async def image_query_endpoint(request: ImageQueryRequest):
         ]
 
         kwargs = {"model": "gemma3", "messages": messages}
-        if request.max_tokens:
-            kwargs["max_tokens"] = request.max_tokens
+
 
         response = client.chat.completions.create(**kwargs)
         return {"response": response.choices[0].message.content}
@@ -55,8 +55,7 @@ async def image_query_endpoint(request: ImageQueryRequest):
 async def upload_image_query_endpoint(
     text: str = Form(...),
     system_prompt: str = Form(DEFAULT_SYSTEM_PROMPT),
-    file: UploadFile = File(...),
-    max_tokens: Optional[int] = Query(None)
+    file: UploadFile = File(...)
 ):
     """Handle image upload and query with optional system prompt."""
     try:
@@ -79,8 +78,6 @@ async def upload_image_query_endpoint(
         ]
 
         kwargs = {"model": "gemma3", "messages": messages}
-        if max_tokens:
-            kwargs["max_tokens"] = max_tokens
 
         response = client.chat.completions.create(**kwargs)
         return {"response": response.choices[0].message.content}

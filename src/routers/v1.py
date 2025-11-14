@@ -6,6 +6,7 @@ from models import (
     ChatRequest, ChatResponse, VisualQueryResponse, ExtractTextResponse, PdfSummaryResponse
 )
 from routers.core import upload_image_query_endpoint
+from config import DEFAULT_SYSTEM_PROMPT
 
 router = APIRouter(prefix="/v1", tags=["v1"])
 
@@ -28,7 +29,12 @@ async def indic_visual_query_endpoint(
 ):
     """Handle visual queries via image upload."""
     # In production, validate api_key
-    response_content = await upload_image_query_endpoint(text=query, file=file)
+    # Pass system_prompt explicitly when calling internally
+    response_content = await upload_image_query_endpoint(
+        text=query, 
+        system_prompt=DEFAULT_SYSTEM_PROMPT, 
+        file=file
+    )
     return VisualQueryResponse(
         answer=response_content["response"],
         src_lang=src_lang,
