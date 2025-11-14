@@ -4,7 +4,7 @@ from typing import Optional
 import base64
 import uuid
 from datetime import datetime
-
+from sqlalchemy.orm import Session
 from models import TextQueryRequest, ImageQueryRequest
 from clients import client
 from config import DEFAULT_SYSTEM_PROMPT
