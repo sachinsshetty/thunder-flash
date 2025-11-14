@@ -2,6 +2,12 @@
 
 - CIHBw-4	Bomb-Lense	 - [challenge](challenge.md)
 
+- System Diagram 
+    - ![system-diagram](docs/thunder-v1.jpg "system-diagram")
+
+- Tasks
+    - [Stage 1](docs/tasks-v1.md) : 1pm Nov 13 - 1pm Nov 14
+
 - Idea is to build an Android App, which user/soldier can send audio/image/videos for analysis. 
 - The server will process the information and update the battlefield information.    
 
