@@ -5,6 +5,8 @@
 - System Diagram 
     - ![system-diagram](docs/thunder-v1.jpg "system-diagram")
 
+- Entity Relationshop Model - [document](docs/database-er-design.md)
+    
 - Tasks
     - [Stage 1](docs/tasks-v1.md) : 1pm Nov 13 - 1pm Nov 14
 
