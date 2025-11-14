@@ -10,6 +10,120 @@ from config import DEFAULT_SYSTEM_PROMPT
 
 router = APIRouter(prefix="/v1", tags=["v1"])
 
+# File: routers/v1.py (new - endpoints for UserCapture with prefix /v1)
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from typing import List
+from database import get_db, UserCapture
+from schemas import UserCaptureCreate, UserCaptureUpdate, UserCaptureResponse
+import logging
+
+logger = logging.getLogger(__name__)
+
+#router = APIRouter(prefix="/v1", tags=["user-captures"])
+
+# Dependency injection for database session
+def get_db_session(db: Session = Depends(get_db)):
+    return db
+
+@router.get("/user-captures/", response_model=List[UserCaptureResponse])
+def read_user_captures(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    """
+    Retrieve a paginated list of user captures.
+    """
+    try:
+        captures = db.query(UserCapture).offset(skip).limit(limit).all()
+        logger.info(f"Retrieved {len(captures)} user captures.")
+        return captures
+    except Exception as e:
+        logger.error(f"Error retrieving user captures: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@router.get("/user-captures/{user_id}", response_model=UserCaptureResponse)
+def read_user_capture_by_user_id(user_id: str, db: Session = Depends(get_db)):
+    """
+    Retrieve a specific user capture by user_id.
+    """
+    try:
+        capture = db.query(UserCapture).filter(UserCapture.user_id == user_id).first()
+        if capture is None:
+            raise HTTPException(status_code=404, detail="User capture not found")
+        return capture
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error retrieving user capture for user_id {user_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@router.post("/user-captures/", response_model=UserCaptureResponse, status_code=status.HTTP_201_CREATED)
+def create_user_capture(capture_create: UserCaptureCreate, db: Session = Depends(get_db)):
+    """
+    Create a new user capture.
+    """
+    try:
+        # Check if user_id already exists (enforce uniqueness)
+        existing = db.query(UserCapture).filter(UserCapture.user_id == capture_create.user_id).first()
+        if existing:
+            raise HTTPException(status_code=409, detail="User capture for this user_id already exists")
+        
+        db_capture = UserCapture(**capture_create.dict())
+        db.add(db_capture)
+        db.commit()
+        db.refresh(db_capture)
+        logger.info(f"Created user capture for user_id {capture_create.user_id}")
+        return db_capture
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error creating user capture: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@router.put("/user-captures/{capture_id}", response_model=UserCaptureResponse)
+def update_user_capture(capture_id: int, capture_update: UserCaptureUpdate, db: Session = Depends(get_db)):
+    """
+    Update an existing user capture by ID.
+    """
+    try:
+        db_capture = db.query(UserCapture).filter(UserCapture.id == capture_id).first()
+        if db_capture is None:
+            raise HTTPException(status_code=404, detail="User capture not found")
+        
+        update_data = capture_update.dict(exclude_unset=True)
+        for field, value in update_data.items():
+            setattr(db_capture, field, value)
+        
+        db.commit()
+        db.refresh(db_capture)
+        logger.info(f"Updated user capture ID {capture_id}")
+        return db_capture
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error updating user capture ID {capture_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@router.delete("/user-captures/{capture_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_user_capture(capture_id: int, db: Session = Depends(get_db)):
+    """
+    Delete a user capture by ID.
+    """
+    try:
+        db_capture = db.query(UserCapture).filter(UserCapture.id == capture_id).first()
+        if db_capture is None:
+            raise HTTPException(status_code=404, detail="User capture not found")
+        
+        db.delete(db_capture)
+        db.commit()
+        logger.info(f"Deleted user capture ID {capture_id}")
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error deleting user capture ID {capture_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
 @router.post("/indic_chat", response_model=ChatResponse)
 async def indic_chat_endpoint(chat_request: ChatRequest, api_key: Optional[str] = Header(None)):
     """Handle chat requests (dummy implementation)."""

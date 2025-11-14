@@ -1,10 +1,9 @@
-# main.py
+# File: main.py (updated - added startup event call)
 from fastapi import FastAPI
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from middleware import TimingMiddleware
 from database import startup_event
-
 
 from routers.core import router as core_router
 from routers.v1 import router as v1_router
@@ -13,6 +12,10 @@ app = FastAPI(title="Thunder EDTH", description="Danger Detection")
 
 app.include_router(core_router)
 app.include_router(v1_router)
+
+@app.on_event("startup")
+async def on_startup():
+    await startup_event()
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
