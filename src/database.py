@@ -1,22 +1,14 @@
-# File: database.py (updated)
+# File: database.py (updated - replaced ClientProfile table with user_capture table)
 import os
 import json
 from pathlib import Path
-from sqlalchemy import create_engine, Column, Integer, String, Date, Enum as SQLEnum, Text, Boolean, Float
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, Text, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import logging
-from datetime import date
+from datetime import datetime
 from constants import MOCK_DATA_JSON
-from enum import Enum
 logger = logging.getLogger(__name__)
-
-# Define Status Enum for consistency
-class StatusEnum(str, Enum):
-    PENDING = "pending"
-    LIVE = "LIVE"
-    MONITORED = "MONITORED"
-    # Add other statuses as needed, e.g., COMPLETED = "completed", EXPIRED = "expired"
 
 SQLITE_DB_PATH = os.getenv("SQLITE_DB_PATH", "app.db")
 db_dir = Path(SQLITE_DB_PATH).parent
@@ -25,16 +17,15 @@ engine = create_engine(f"sqlite:///{SQLITE_DB_PATH}", echo=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-class ClientProfile(Base):
-    __tablename__ = "client_profiles"
+class UserCapture(Base):
+    __tablename__ = "user_captures"
 
     id = Column(Integer, primary_key=True, index=True)
-    client_id = Column(String, unique=True, index=True)  # Added unique=True for integrity
-    company_name = Column(String)
-    country = Column(String)
-    new_regulation = Column(String)
-    deadline = Column(Date)
-    status = Column(SQLEnum(StatusEnum, name="client_status"), default=StatusEnum.PENDING)  # Use Enum with default
+    user_id = Column(String, index=True)
+    image = Column(Text)  # Base64 encoded string
+    latitude = Column(Float)
+    longitude = Column(Float)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 Base.metadata.create_all(bind=engine)
 
@@ -48,47 +39,7 @@ def get_db():
 async def startup_event():
     db = SessionLocal()
     try:
-        # Handle ClientProfile mock data insertion
-        if db.query(ClientProfile).count() == 0:
-            if not MOCK_DATA_JSON.exists():
-                logger.warning(f"Mock data JSON file not found at {MOCK_DATA_JSON}. Skipping mock data insertion.")
-            else:
-                try:
-                    with open(MOCK_DATA_JSON, 'r', encoding='utf-8') as jsonfile:
-                        mock_data = json.load(jsonfile)
-                    
-                    logger.info(f"Loaded {len(mock_data)} client profiles from JSON.")
-                except Exception as e:
-                    logger.error(f"Failed to load mock data JSON: {str(e)}. Skipping mock data insertion.")
-                    mock_data = []
-
-                for data in mock_data:
-                    # Check for duplicates before adding
-                    if db.query(ClientProfile).filter(ClientProfile.client_id == data["client_id"]).first():
-                        logger.info(f"Skipping existing client {data['client_id']}.")
-                        continue
-                    
-                    parsed_data = data.copy()
-                    if data["deadline"] and isinstance(data["deadline"], str) and data["deadline"].strip():
-                        try:
-                            parsed_data["deadline"] = date.fromisoformat(data["deadline"].strip())
-                        except ValueError:
-                            logger.warning(f"Invalid deadline format '{data['deadline']}' for client {data['client_id']}. Setting to None.")
-                            parsed_data["deadline"] = None
-                    else:
-                        parsed_data["deadline"] = None
-                    
-                    # Map string status to Enum
-                    try:
-                        parsed_data["status"] = StatusEnum(parsed_data["status"])
-                    except ValueError:
-                        logger.warning(f"Invalid status '{parsed_data['status']}' for client {data['client_id']}. Setting to PENDING.")
-                        parsed_data["status"] = StatusEnum.PENDING
-                    
-                    client = ClientProfile(**parsed_data)
-                    db.add(client)
-                db.commit()
-                logger.info("Mock data inserted successfully.")
-
+        # No mock data insertion for user_captures at this time
+        logger.info("Database startup completed.")
     finally:
         db.close()

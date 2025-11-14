@@ -1,6 +1,10 @@
 # main.py
 from fastapi import FastAPI
 import uvicorn
+from fastapi.middleware.cors import CORSMiddleware
+from middleware import TimingMiddleware
+from database import startup_event
+
 
 from routers.core import router as core_router
 from routers.v1 import router as v1_router
