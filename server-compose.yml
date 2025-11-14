@@ -1,0 +1,9 @@
+services:
+  server:
+    image: dwani/thunder-server:latest
+    ports:
+      - "80:8000"
+    restart: unless-stopped
+    environment:
+      - SQLITE_DB_PATH=/app/data/app.db
+      - DWANI_API_BASE_URL=https://<vllm-ip>.dwani.ai
