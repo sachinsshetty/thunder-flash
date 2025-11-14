@@ -155,25 +155,24 @@ async def chat(chat_request: ChatRequest, api_key: str = Header(None)):
         session_id="dummy_session"
     )
 
-
-
 @app.post("/v1/indic_visual_query", response_model=VisualQueryResponse)
 async def visual_query(
     file: UploadFile = File(...),
     query: str = Form(...),
-    src_lang: str = Query(...),
-    tgt_lang: str = Query(...),
+    src_lang: str = Query("eng_Latn"),
+    tgt_lang: str = Query("eng_Latn"),
     api_key: str = Header(None)
 ):
+    # Hardcode or provide a default system prompt as string when calling internally
+    default_system_prompt = "You are a helpful assistant that analyzes images and provides insightful responses based on the query."
+    response_content = await upload_image_query(text=query, system_prompt=default_system_prompt, file=file)
 
-    # Dummy visual query
-    content = await file.read()
+    print(response_content)
     return VisualQueryResponse(
-        query_result=f"Visual query result for: {query}",
+        query_result=response_content["response"],
         src_lang=src_lang,
         tgt_lang=tgt_lang
     )
-
 
 @app.post("/v1/extract-text", response_model=ExtractTextResponse)
 async def extract_text(
