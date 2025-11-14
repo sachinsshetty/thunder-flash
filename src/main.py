@@ -41,6 +41,7 @@ async def text_query(request: TextQueryRequest):
         return {"response": response.choices[0].message.content}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
 @app.post("/image_query")
 async def image_query(request: ImageQueryRequest):
     try:
@@ -73,10 +74,10 @@ def encode_image(image_path: str) -> str:
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')
 
-
 @app.post("/upload_image_query")
 async def upload_image_query(
     text: str = Form(...),
+    system_prompt: str = Form("You are a helpful assistant that analyzes images and provides insightful responses based on the query."),
     file: UploadFile = File(...)
 ):
     try:
@@ -93,6 +94,10 @@ async def upload_image_query(
             model="gemma3",
             messages=[
                 {
+                    "role": "system",
+                    "content": system_prompt
+                },
+                {
                     "role": "user",
                     "content": [
                         {"type": "text", "text": text},
@@ -107,7 +112,7 @@ async def upload_image_query(
         return {"response": response.choices[0].message.content}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
+    
 from fastapi import FastAPI, UploadFile, File, Form, Query, Header, HTTPException, Response
 from fastapi.responses import StreamingResponse, FileResponse
 from pydantic import BaseModel
