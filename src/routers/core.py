@@ -1,11 +1,16 @@
 # routers/core.py
-from fastapi import APIRouter, HTTPException, File, UploadFile, Form, Query
+from fastapi import APIRouter, HTTPException, File, UploadFile, Form, Query, Depends
 from typing import Optional
 import base64
+import uuid
+from datetime import datetime
 
 from models import TextQueryRequest, ImageQueryRequest
 from clients import client
 from config import DEFAULT_SYSTEM_PROMPT
+
+from database import get_db, UserCapture
+from schemas import UserCaptureCreate
 
 router = APIRouter(prefix="", tags=["core"])
 
@@ -45,7 +50,6 @@ async def image_query_endpoint(request: ImageQueryRequest):
 
         kwargs = {"model": "gemma3", "messages": messages}
 
-
         response = client.chat.completions.create(**kwargs)
         return {"response": response.choices[0].message.content}
     except Exception as e:
@@ -57,7 +61,8 @@ async def upload_image_query_endpoint(
     system_prompt: str = Form(DEFAULT_SYSTEM_PROMPT),
     lat: float = Form(52.5200),
     lon: float = Form(13.4050),
-    file: UploadFile = File(...)
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db)
 ):
     """Handle image upload and query with optional system prompt and GPS coordinates."""
     try:
@@ -81,9 +86,42 @@ async def upload_image_query_endpoint(
 
         kwargs = {"model": "gemma3", "messages": messages}
 
-
         print(f"{text} (Location: {lat}, {lon})")
         response = client.chat.completions.create(**kwargs)
-        return {"response": response.choices[0].message.content}
+        ai_response = response.choices[0].message.content
+
+        # Generate a unique user_id for this capture
+        user_id = str(uuid.uuid4())
+
+        # Prepare data for UserCapture insertion
+        # Assuming UserCaptureCreate schema includes fields like: user_id, query_text, image_data, lat, lon, created_at, ai_response
+        # Adjust fields as per your actual schema; created_at will be auto-set if not provided
+        capture_create = UserCaptureCreate(
+            user_id=user_id,
+            query_text=text,
+            image_data=image_url,  # Store base64 image URL
+            lat=lat,
+            lon=lon,
+            ai_response=ai_response,
+            created_at=datetime.utcnow()  # Explicitly set if not auto-generated
+        )
+
+        # Check for existing (though unlikely with UUID)
+        existing = db.query(UserCapture).filter(UserCapture.user_id == user_id).first()
+        if existing:
+            raise HTTPException(status_code=409, detail="User capture already exists (unlikely with UUID)")
+
+        # Insert into database
+        db_capture = UserCapture(**capture_create.dict())
+        db.add(db_capture)
+        db.commit()
+        db.refresh(db_capture)
+
+        # Return the AI response (you could also include the capture ID if needed)
+        return {"response": ai_response, "capture_id": db_capture.id}
+
+    except HTTPException:
+        raise
     except Exception as e:
+        db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
