@@ -1,7 +1,7 @@
 # routers/v1.py
 from fastapi import APIRouter, File, UploadFile, Form, Query, Header, HTTPException
 from typing import Optional
-
+from datetime import datetime
 from models import (
     ChatRequest, ChatResponse, VisualQueryResponse, ExtractTextResponse, PdfSummaryResponse
 )
@@ -102,6 +102,35 @@ def update_user_capture(capture_id: int, capture_update: UserCaptureUpdate, db: 
     except Exception as e:
         db.rollback()
         logger.error(f"Error updating user capture ID {capture_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
+@router.get("/user-captures/time-range/", response_model=List[UserCaptureResponse])
+def read_user_captures_by_time_range(
+    start_time: datetime,
+    end_time: datetime,
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db)
+):
+    """
+    Retrieve a paginated list of user captures within a specified time range.
+    start_time and end_time should be in ISO 8601 format (e.g., 2025-11-14T00:00:00).
+    """
+    try:
+        if start_time > end_time:
+            raise HTTPException(status_code=400, detail="start_time must be before end_time")
+        
+        query = db.query(UserCapture).filter(
+            UserCapture.created_at >= start_time,
+            UserCapture.created_at <= end_time
+        )
+        captures = query.offset(skip).limit(limit).all()
+        logger.info(f"Retrieved {len(captures)} user captures from {start_time} to {end_time}.")
+        return captures
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error retrieving user captures by time range: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @router.delete("/user-captures/{capture_id}", status_code=status.HTTP_204_NO_CONTENT)
