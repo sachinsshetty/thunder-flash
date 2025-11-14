@@ -154,6 +154,7 @@ async def chat(chat_request: ChatRequest, api_key: str = Header(None)):
         response=f"Response to: {chat_request.message}",
         session_id="dummy_session"
     )
+from fastapi import Form, File, UploadFile, Query, Header
 
 @app.post("/v1/indic_visual_query", response_model=VisualQueryResponse)
 async def visual_query(
@@ -167,17 +168,12 @@ async def visual_query(
     default_system_prompt = "You are a helpful assistant that analyzes images and provides insightful responses based on the query."
     response_content = await upload_image_query(text=query, system_prompt=default_system_prompt, file=file)
 
-    response = response_content
-
-    result = {
-        "extracted_text": response_content,
-        "response": response
-    }
-    if response:
-        result["response"] = response
-
-    return VisualQueryResponse(answer=response_content)
-
+    print(response_content)
+    return VisualQueryResponse(
+        query_result=response_content["response"],
+        src_lang=src_lang,
+        tgt_lang=tgt_lang
+    )
 
 @app.post("/v1/extract-text", response_model=ExtractTextResponse)
 async def extract_text(
