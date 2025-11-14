@@ -1,0 +1,9 @@
+
+
+AK47 - Genertor Prompt
+    - The AK-47 lay half-buried in a tangle of overgrown weeds and shattered concrete chunks, just beyond the sagging chain-link fence of the old warehouse. Its matte black finish, once factory-fresh and unyielding, had surrendered to the elements—patches of rust bloomed like bloodstains along the barrel and receiver, where rain and neglect had pried at the stamped steel. The wooden stock, splintered at the edges from some long-forgotten impact, bore the faint carvings of initials scratched in with a knife, a ghost's graffiti from whoever discarded it here.The rifle's iconic curved 30-round magazine dangled loosely from the receiver, caked in dried mud that flaked off like old skin when disturbed. Its iron sights, bent slightly askew, stared blankly into the dusk, while the selector switch—frozen midway between safe and semi-auto—whispered of interrupted intent. A faint, acrid scent of gun oil mingled with the rot of damp leaves and urban decay, the only clue to its violent past. Scattered nearby were empty brass casings, oxidized and half-sunk into the soil, like forgotten teeth from a brawl the building itself had witnessed and turned away from. In the fading light, it looked less like a weapon and more like a relic, abandoned by time as surely as the crumbling walls behind it.
+
+{
+  "prompt": "identify the weapon - black and rusty metal tube with a weird curved clip sticking out, wooden handle thats all chipped, and this funky slanted thing at the end of the barrel.",
+  "system_prompt": "You are Weapons officer, who can identify military items accurately. Keep response to a single line, identify the weapon and its type"
+}

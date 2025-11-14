@@ -5,7 +5,7 @@ import base64
 import os
 from typing import Optional
 
-app = FastAPI(title="OpenAI Query Endpoints", description="Endpoints for text and image queries using OpenAI API")
+app = FastAPI(title="Thunder EDTH", description="Danger Detection")
 
 # Initialize OpenAI client (use environment variables for security in production)
 API_KEY = os.getenv("DWANI_API_KEY", "your-api-key-here")
@@ -16,24 +16,31 @@ client = OpenAI(
     base_url=BASE_URL
 )
 
-class TextQueryRequest(BaseModel):
-    prompt: str
-
 class ImageQueryRequest(BaseModel):
     text: str
     image_url: str  # Can be HTTP URL or base64 data URL like "data:image/jpeg;base64,{base64_data}"
+from pydantic import BaseModel
+
+class TextQueryRequest(BaseModel):
+    prompt: str
+    system_prompt: str = "You are Weapons officer, who can identify military items accurately. Keep response to a single line, identify the weapon and its type"  # Optional system prompt; defaults to empty string
 
 @app.post("/text_query")
 async def text_query(request: TextQueryRequest):
     try:
+        id_user_prompt = "identify the weapon :"
+        user_prompt = id_user_prompt + request.prompt
+        messages = [{"role": "user", "content": user_prompt}]
+        if request.system_prompt.strip():  # Only add system message if provided and non-empty
+            messages.insert(0, {"role": "system", "content": request.system_prompt})
+        
         response = client.chat.completions.create(
             model="gemma3",
-            messages=[{"role": "user", "content": request.prompt}],
+            messages=messages,
         )
         return {"response": response.choices[0].message.content}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 @app.post("/image_query")
 async def image_query(request: ImageQueryRequest):
     try:
