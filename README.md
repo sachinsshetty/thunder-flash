@@ -51,3 +51,4 @@ production
 
 docker build --build-arg VITE_DWANI_API_BASE_URL=https://<thunder-serverip>.dwani.ai -t dwani/thunder-ux -f prod.Dockerfile .
 
+docker push dwani/thunder-ux
