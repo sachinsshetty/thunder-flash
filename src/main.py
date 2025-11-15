@@ -4,6 +4,7 @@ import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from middleware import TimingMiddleware
 from database import startup_event
+from fastapi.responses import RedirectResponse
 
 from routers.core import router as core_router
 from routers.v1 import router as v1_router
@@ -20,6 +21,14 @@ app.add_middleware(
 
 app.include_router(core_router)
 app.include_router(v1_router)
+
+
+@app.get("/",
+         summary="Redirect to Docs",
+         description="Redirects to the Swagger UI documentation.",
+         tags=["Utility"])
+async def home():
+    return RedirectResponse(url="/docs")
 
 @app.on_event("startup")
 async def on_startup():
