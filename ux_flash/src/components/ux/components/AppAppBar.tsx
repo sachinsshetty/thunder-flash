@@ -44,7 +44,7 @@ export default function AppAppBar() {
   };
 
   const handleDashboardClick = () => {
-    navigate('/dash-data');
+    navigate('/dashboard');
     toggleDrawer(false)();
   };
 
@@ -103,13 +103,13 @@ export default function AppAppBar() {
               <Button variant="text" color="info" size="small" onClick={handleHomeClick}>
                 Home
               </Button>
-              <Button variant="text" color="info" size="small" onClick={handleResearchClick}>
-                Research
-              </Button>
                 <Button variant="text" color="info" size="small" onClick={handleDashboardClick}>
                 Dashboard
               </Button>
               <div style={{ display: 'none' }}>
+              <Button variant="text" color="info" size="small" onClick={handleResearchClick}>
+                Research
+              </Button>
               <Button variant="text" color="info" size="small" onClick={handleAPIClick}>
                 API
               </Button>
@@ -187,17 +187,18 @@ export default function AppAppBar() {
                     Home
                   </Button>
                   </MenuItem>
-                <MenuItem>
-                  <Button color="primary" variant="contained" fullWidth onClick={handleResearchClick}>
-                    Research
-                  </Button>
-                </MenuItem>
+
                   <MenuItem>
                   <Button color="primary" variant="contained" fullWidth onClick={handleDashboardClick}>
                     Dashboard
                   </Button>
                 </MenuItem>
               <div style={{ display: 'none' }}>
+                                <MenuItem>
+                  <Button color="primary" variant="contained" fullWidth onClick={handleResearchClick}>
+                    Research
+                  </Button>
+                </MenuItem>
                   <MenuItem>
                   <Button color="primary" variant="contained" fullWidth onClick={handleDocsClick}>
                     Demo
