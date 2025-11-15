@@ -23,7 +23,7 @@
 ```bash
 cd src
 
-docker build -t dwani/thunder-server:latest -f server.Dockerfile .
+docker build -t dwani/thunder-server:latest -f Dockerfile .
 
 docker push dwani/thunder-server
 docker compose -f server-compose.yml up -d
