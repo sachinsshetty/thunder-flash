@@ -1,8 +1,8 @@
 services:
   tax_ui:
-    image: dwani/thunder-ui-dev
+    image: dwani/thunder-ux-dev
     ports:
       - "80:3000"
     environment:
-      - VITE_DWANI_API_BASE_URL=https://tax-server.dwani.ai
+      - VITE_DWANI_API_BASE_URL=https://thunder.dwani.ai
     restart: unless-stopped
