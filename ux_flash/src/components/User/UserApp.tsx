@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from 'react';
 import { Container, Grid, Typography, Card, CardContent, Button, Box, CircularProgress, Alert, Avatar, Divider, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import UserCaptures from './UserCaptures';
-import RegulatoryFeed from './RegulatoryFeed';
 
 interface UserCapture {
   id: number;
@@ -42,11 +41,8 @@ const getApiBaseUrl = (): string => {
 
 const UserApp = () => {
   const [captures, setCaptures] = useState<UserCapture[]>([]);
-  const [regulatoryFeed, setRegulatoryFeed] = useState([]);
   const [error, setError] = useState<string | null>(null);
-  const [errorRegulatory, setErrorRegulatory] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [loadingRegulatory, setLoadingRegulatory] = useState(true);
  
   const fetchCaptures = async (retries = 3) => {
     try {
@@ -80,41 +76,9 @@ const UserApp = () => {
     }
   };
 
-  const fetchRegulatory = async (retries = 3) => {
-    try {
-      const DWANI_API_BASE_URL = getApiBaseUrl();
-      const apiUrl = `${DWANI_API_BASE_URL}/api/countries/regulatory-feed`;
-
-      console.log('Fetching regulatory feed from:', apiUrl);
-      
-      const res = await fetch(apiUrl);
-      if (!res.ok) {
-        const errorText = await res.text();
-        console.error(`HTTP ${res.status}: ${res.statusText} - Body: ${errorText}`);
-        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-      }
-      const data = await res.json();
-      const camelCasedData = camelizeKeys(data);
-      setRegulatoryFeed(camelCasedData);
-      setErrorRegulatory(null);
-      console.log('Fetched regulatory feed:', camelCasedData);
-    } catch (err) {
-      console.error('Error fetching regulatory feed:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
-      if (retries > 0) {
-        console.log(`Retrying in 1s... (${retries} left)`);
-        setTimeout(() => fetchRegulatory(retries - 1), 1000);
-      } else {
-        setErrorRegulatory(`Failed to load regulatory feed: ${errorMessage}. Check backend (port 8000) & Docker network.`);
-      }
-    } finally {
-      setLoadingRegulatory(false);
-    }
-  };
 
   useEffect(() => {
     fetchCaptures();
-    fetchRegulatory();
   }, []);
 
  
@@ -242,34 +206,6 @@ const UserApp = () => {
 
           <Divider sx={{ my: 1, borderColor: '#1e2d4a' }} />
 
-          <Card sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a' }}>
-            <CardContent>
-              <Accordion defaultExpanded={false} sx={{ boxShadow: 'none' }}>
-                <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'grey.400' }} />}>
-                  <Typography variant="h5" fontWeight="600" sx={{ color: 'grey.400', flexGrow: 1 }}>Regulatory Feed</Typography>
-                </AccordionSummary>
-                <AccordionDetails sx={{ p: 0 }}>
-                  {errorRegulatory && (
-                    <Alert severity="error" sx={{ mb: 2 }} action={
-                      <Button color="inherit" size="small" onClick={() => { setLoadingRegulatory(true); setErrorRegulatory(null); fetchRegulatory(); }}>
-                        Retry
-                      </Button>
-                    }>
-                      {errorRegulatory}
-                    </Alert>
-                  )}
-                  {loadingRegulatory ? (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-                      <CircularProgress />
-                      <Typography variant="body1" sx={{ ml: 2 }}>Loading regulatory feed...</Typography>
-                    </Box>
-                  ) : (
-                    <RegulatoryFeed feed={regulatoryFeed} />
-                  )}
-                </AccordionDetails>
-              </Accordion>
-            </CardContent>
-          </Card>
         </Grid>
         <div style={{ display: 'none' }}>
           <Grid item xs={12} lg={4}>
