@@ -23,7 +23,7 @@ export default defineConfig({
     },
     // Add this to allow the custom domain
     allowedHosts: [
-      'tax.dwani.ai',
+      'flash.dwani.ai',
       '.dwani.ai'  // Optional: Wildcard for all *.dwani.ai subdomains
     ]
   }

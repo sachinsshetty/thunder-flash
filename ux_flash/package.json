@@ -1,9 +1,9 @@
 {
-  "name": "uberTax",
+  "name": "flash",
   "private": true,
   "version": "0.0.1",
   "type": "module",
-  "homepage": "https://tax.dwani.ai",
+  "homepage": "https://flash.dwani.ai",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

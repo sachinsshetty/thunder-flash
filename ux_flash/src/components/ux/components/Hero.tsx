@@ -1,4 +1,4 @@
-// Hero.jsx (updated to only contain informational content)
+// Hero.jsx (updated for WeaponWatch AI - English version)
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -10,11 +10,10 @@ import Divider from '@mui/material/Divider';
 import { styled } from '@mui/material/styles';
 import Chip from '@mui/material/Chip';
 import {
-  GavelOutlined,
-  DocumentScannerOutlined,
-  TimelineOutlined,
-  BusinessOutlined,
-  AssessmentOutlined,
+  VisibilityOffOutlined,
+  WarningOutlined,
+  LocationOnOutlined,
+  NotificationsOutlined,
 } from '@mui/icons-material';
 
 // Styled FeatureCard (unchanged from your original code)
@@ -54,96 +53,96 @@ const ProblemSolutionCard = styled(Box)(({ theme }) => ({
   textAlign: 'center',
 }));
 
-// Data for Problem and Solution sections based on PDF
+// Data for Problem and Solution sections (adapted for WeaponWatch AI - English)
 const problems = [
   {
-    text: 'Hoher Zeitaufwand für manuelle Recherche erforderlich',
-    icon: <TimelineOutlined color="error" fontSize="large" />,
-    chipLabel: 'Zeit',
+    text: 'Difficulties in quickly detecting suspicious military items',
+    icon: <VisibilityOffOutlined color="error" fontSize="large" />,
+    chipLabel: 'Detection',
   },
   {
-    text: 'Unternehmen wird verwundbar, wenn es rechtlich nicht auf dem neuesten Stand ist',
-    icon: <GavelOutlined color="error" fontSize="large" />,
-    chipLabel: 'Rechtlich',
+    text: 'High risk from unidentified threats in the civilian population',
+    icon: <WarningOutlined color="error" fontSize="large" />,
+    chipLabel: 'Security',
   },
   {
-    text: 'Umsetzungshürden erfordern einen frühen Projektstart',
-    icon: <BusinessOutlined color="error" fontSize="large" />,
-    chipLabel: 'Ausführen',
+    text: 'Delayed responses to suspicious sightings on-site',
+    icon: <LocationOnOutlined color="error" fontSize="large" />,
+    chipLabel: 'Response',
   },
   {
-    text: 'Politik kann rechtliche Überwachung zu einer Krise machen',
-    icon: <AssessmentOutlined color="error" fontSize="large" />,
-    chipLabel: 'Politik',
+    text: 'Lack of public awareness and coordination in threats',
+    icon: <NotificationsOutlined color="error" fontSize="large" />,
+    chipLabel: 'Awareness',
   },
 ];
 
 const solutions = [
   {
-    text: 'Von Verpflichtung zur Strategie: Proaktiver Verkauf von Dienstleistungen',
-    icon: <GavelOutlined color="primary" fontSize="large" />,
-    chipLabel: 'Für Steuerberater',
+    text: 'From passive observation to active citizen watch: Instant AI identification',
+    icon: <VisibilityOffOutlined color="primary" fontSize="large" />,
+    chipLabel: 'For Civilians',
   },
   {
-    text: 'Unübertroffene Kundenbindung und keine Überraschungen mehr',
-    icon: <BusinessOutlined color="primary" fontSize="large" />,
-    chipLabel: 'Kundenbindung',
+    text: 'Secure notifications and real-time alerts for maximum safety',
+    icon: <WarningOutlined color="primary" fontSize="large" />,
+    chipLabel: 'Notifications',
   },
   {
-    text: 'Effiziente Ressourcenplanung und umfassende Compliance-Sicherstellung',
-    icon: <DocumentScannerOutlined color="primary" fontSize="large" />,
-    chipLabel: 'Für Unternehmen',
+    text: 'Community network for reporting and rapid escalation',
+    icon: <LocationOnOutlined color="primary" fontSize="large" />,
+    chipLabel: 'Network',
   },
   {
-    text: 'Paradigmenwechsel von reaktiver Rechtsabteilung zu proaktivem Geschäftspartner',
-    icon: <TimelineOutlined color="primary" fontSize="large" />,
-    chipLabel: 'Proaktiver Wandel',
+    text: 'Educational resources and training modules for proactive threat recognition',
+    icon: <NotificationsOutlined color="primary" fontSize="large" />,
+    chipLabel: 'Education',
   },
 ];
 
 const features = [
   {
-    title: 'E-Rechnungsverpflichtung',
-    description: 'KI-Workflow: Erkennen, Verstehen, Anwenden zur Generierung von Kundenwarnungen in 24 Stunden.',
-    components: 'Rechtliche Überwachung',
-    hardware: 'GPU',
+    title: 'Small Arms Detection',
+    description: 'AI Model: Instant classification and risk assessment for common firearms.',
+    components: 'Image Analysis',
+    hardware: 'Mobile GPU',
   },
   {
-    title: 'Transfer Pricing',
-    description: 'Kommende Modul für proaktive Compliance in internationalen Steuerstrategien.',
-    components: 'Steueragent',
+    title: 'Explosives Identification',
+    description: 'Detection of potential explosive devices through visual and contextual analysis.',
+    components: 'Sensor Integration',
     hardware: 'CPU/GPU',
   },
   {
-    title: 'Pillar 2 & ESG Reporting',
-    description: 'Skalierbare Warnungen für globale Steuerstandards und Nachhaltigkeitsberichterstattung.',
-    components: 'Dashboard',
+    title: 'Vehicle & Drone Surveillance',
+    description: 'Scalable alerts for military vehicles and UAVs in civilian areas.',
+    components: 'Real-Time Dashboard',
     hardware: 'GPU',
   },
   {
-    title: 'Arbeitsrecht, DSGVO, Vertragsrecht',
-    description: 'Erweiterbar auf andere Rechtsbereiche mit Dokumentenparsing und Kommunikationsprofilen.',
-    components: 'Multimodal',
+    title: 'Advanced Threat Modules',
+    description: 'Customizable for additional categories with community feedback and ML training.',
+    components: 'Multimodal AI',
     hardware: 'CPU/GPU',
   },
 ];
 
-// Main Hero Component (now only informational content)
+// Main Hero Component (now for WeaponWatch AI informational content - English)
 export default function Hero() {
   return (
     <>
-      <title>Juris-Diction(AI)ry | KI-gestützte Rechtsüberwachung</title>
+      <title>WeaponWatch AI | Civilian Weapons Identification System</title>
       <meta
         name="description"
-        content="Entdecken Sie Juris-Diction(AI)ry, angetrieben von dwani.ai – eine GenAI-Plattform für proaktive Rechtsüberwachung im Steuerrecht und darüber hinaus. Von E-Rechnungen bis ESG sorgen Sie mit sicheren, multimodalen Analysen für Compliance."
+        content="Discover WeaponWatch AI, powered by dwani.ai – an AI platform for civilians to identify suspicious military items, send notifications, and exchange information. From small arms to drones: Stay safe and informed."
       />
       <meta
         name="keywords"
-        content="Juris-Diction(AI)ry, dwani.ai, Rechtsüberwachung, Steuer-Compliance, E-Rechnungen, Transfer Pricing, Pillar 2, ESG Reporting, KI-Rechtswarnungen"
+        content="WeaponWatch AI, dwani.ai, weapons detection, suspicious military items, civilian safety, AI alerts, small arms, explosives, drone surveillance"
       />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta name="robots" content="index, follow" />
-      <link rel="canonical" href="https://uberTax" />
+      <link rel="canonical" href="https://uberWatch" />
 
       <Box
         id="hero"
@@ -185,7 +184,7 @@ export default function Hero() {
                 textAlign: 'center',
               }}
             >
-              Juris-Diction(AI)ry
+              WeaponWatch AI
             </Typography>
             <Typography
               variant="h6"
@@ -196,7 +195,7 @@ export default function Hero() {
                 fontWeight: 'medium',
               }}
             >
-              Angetrieben von dwani.ai
+              Powered by dwani.ai
             </Typography>
 
             <Divider sx={{ width: '60%', mx: 'auto', my: 2 }} />
@@ -205,7 +204,7 @@ export default function Hero() {
               variant="body1"
               sx={{ textAlign: 'center', color: 'text.secondary' }}
             >
-              Proaktive Rechtsüberwachung: Von der Krise zum strategischen Vorteil
+              Civilian Weapons Identification: From Uncertainty to Collective Vigilance
             </Typography>
 
             <Divider sx={{ width: '60%', mx: 'auto', my: 2 }} />
@@ -214,41 +213,27 @@ export default function Hero() {
               variant="body1"
               sx={{ textAlign: 'center', color: 'text.secondary' }}
             >
-              Vom Konzept zu Live-Warnungen in 24 Stunden. Erkunden Sie das{' '}
+              From sighting to secure reporting in seconds. Explore the{' '}
               <Link
-                href="https://tax.dwani.ai/dashboard"
+                href="https://watch.dwani.ai/dashboard"
                 target="_blank"
                 color="primary"
-                aria-label="dwani.ai uberTax Dashboard"
+                aria-label="dwani.ai WeaponWatch Dashboard"
               >
-                KI- Workflow
+                AI Workflow
               </Link>.
             </Typography>
-<div style={{ display: 'none' }}> 
-        
-            <Button
-              variant="contained"
-              color="primary"
-              href="https://dev-tax.dwani.ai"
-              target="_blank"
-              size="large"
-              sx={{ mt: 2, px: 4, py: 1.5, borderRadius: 2 }}
-              aria-label="Try Multimodal Inference for Legal Docs"
-            >
-              Ausprobieren - KI-Workflow
-            </Button>
-</div>
 
             <Button
               variant="contained"
               color="primary"
-              href="https://tax.dwani.ai/dashboard"
+              href="https://watch.dwani.ai/dashboard"
               target="_blank"
               size="large"
               sx={{ mt: 2, px: 4, py: 1.5, borderRadius: 2 }}
-              aria-label="Try Multimodal Inference for Legal Docs"
+              aria-label="Try Weapon Identification App"
             >
-              Ausprobieren - Dashboard
+              Try the App
             </Button>
 
             <Divider sx={{ width: '60%', mx: 'auto', my: 2 }} />
@@ -264,7 +249,7 @@ export default function Hero() {
                 component="h3"
                 sx={{ textAlign: 'center', fontWeight: 'bold' }}
               >
-                Rechtsüberwachung ist ein kritischer Schmerzpunkt
+                Threats from undetected weapons are an everyday risk factor
               </Typography>
               <Grid container spacing={3}>
                 {problems.map((problem, index) => (
@@ -300,7 +285,7 @@ export default function Hero() {
                 component="h3"
                 sx={{ textAlign: 'center', fontWeight: 'bold' }}
               >
-                Die doppelte Vorteilslösung
+                The Protective Solution for Civilians
               </Typography>
               <Grid container spacing={3}>
                 {solutions.map((solution, index) => (
@@ -337,7 +322,7 @@ export default function Hero() {
               component="h2"
               sx={{ textAlign: 'center', fontWeight: 'bold' }}
             >
-              Skalierbare Module & Workflow
+              Expandable Modules & Notification Workflow
             </Typography>
             <Grid container spacing={3}>
               {features.map((feature, index) => (
@@ -388,31 +373,31 @@ export default function Hero() {
               component="h2"
               sx={{ textAlign: 'center', fontWeight: 'bold' }}
             >
-              Kontaktieren Sie uns
+              Contact Us
             </Typography>
             <Typography
               variant="body1"
               sx={{ textAlign: 'center', color: 'text.secondary' }}
             >
-              Werden Sie Mitglied in unserer{' '}
+              Join our{' '}
               <Link
                 href="https://discord.gg/9Fq8J9Gnz3"
                 target="_blank"
                 color="primary"
                 aria-label="Join dwani.ai Discord community"
               >
-                Discord-Community
+                Discord Community
               </Link>{' '}
-              für Kooperationen.
+              for collaborations and feedback.
               <br />
-              Haben Sie Fragen?{' '}
+              Have questions?{' '}
               <Link
                 href="https://calendar.app.google/j1L2Sh6sExfWpUTZ7"
                 target="_blank"
                 color="primary"
                 aria-label="Schedule a demo with dwani.ai"
               >
-                Termin vereinbaren
+                Schedule a Meeting
               </Link>.
             </Typography>
           </Stack>
