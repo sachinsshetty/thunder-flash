@@ -90,6 +90,7 @@ const UserApp = () => {
   );
   const percentageRecent = totalCaptures > 0 ? (recentCaptures / totalCaptures) : 0;
 
+  console.log(percentageRecent)
   const currentDate = new Date();
   let activityLevel = 'LOW';
   let activityColor = 'green';
