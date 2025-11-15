@@ -29,6 +29,7 @@ cd ux_flash
 docker build -t dwani/thunder-ux-dev -f prod.Dockerfile .
 
 ```
+cd src
 docker build -t dwani/thunder-ux-dev -f Dockerfile .
 docker compose -f client.yml up -d
 
