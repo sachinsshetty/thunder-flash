@@ -1,6 +1,6 @@
 services:
   tax_ui:
-    image: dwani/ubertax-ui-prod
+    image: dwani/thunder-ux
     ports:
       - "80:80"
     environment:

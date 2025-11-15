@@ -26,7 +26,7 @@ docker build -t dwani/thunder-server:latest -f server.Dockerfile .
     - build
 ```bash
 cd ux_flash
-docker build -t dwani/thunder-ux -f client.Dockerfile .
+docker build -t dwani/thunder-ux -f prod.Dockerfile .
 
 ```
 
