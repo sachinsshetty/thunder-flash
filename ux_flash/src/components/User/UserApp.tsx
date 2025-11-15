@@ -1,19 +1,18 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Container, Grid, Typography, Card, CardContent, Button, Box, CircularProgress, Alert, Avatar, Divider, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ClientProfiles from './ClientProfiles';
-import CountryProfiles from './CountryProfiles';
-import CountryProfile from './CountryProfile';
+import UserCaptures from './UserCaptures';
 import RegulatoryFeed from './RegulatoryFeed';
-import { CountryProfileData } from './CountryProfileData';
 
-interface Client {
-  clientId: string;
-  companyName: string;
-  country: string;
-  newRegulation: string;
-  deadline: string | null;
-  status: string;
+interface UserCapture {
+  id: number;
+  userId: string;
+  queryText: string;
+  image: string;
+  latitude: number;
+  longitude: number;
+  aiResponse: string;
+  createdAt: string;
 }
 
 const camelizeKeys = (obj: any): any => {
@@ -42,18 +41,17 @@ const getApiBaseUrl = (): string => {
 };
 
 const UserApp = () => {
-  const [clients, setClients] = useState<Client[]>([]);
+  const [captures, setCaptures] = useState<UserCapture[]>([]);
   const [regulatoryFeed, setRegulatoryFeed] = useState([]);
   const [error, setError] = useState<string | null>(null);
   const [errorRegulatory, setErrorRegulatory] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingRegulatory, setLoadingRegulatory] = useState(true);
-  const [selectedCountry, setSelectedCountry] = useState<CountryProfileData | null>(null);
-
-  const fetchClients = async (retries = 3) => {
+ 
+  const fetchCaptures = async (retries = 3) => {
     try {
       const DWANI_API_BASE_URL = getApiBaseUrl();
-      const apiUrl = `${DWANI_API_BASE_URL}/api/clients`;
+      const apiUrl = `${DWANI_API_BASE_URL}/v1/user-captures`;
 
       console.log('Fetching from:', apiUrl);
       
@@ -65,17 +63,17 @@ const UserApp = () => {
       }
       const data = await res.json();
       const camelCasedData = camelizeKeys(data);
-      setClients(camelCasedData);
+      setCaptures(camelCasedData);
       setError(null);
-      console.log('Fetched clients:', camelCasedData);
+      console.log('Fetched captures:', camelCasedData);
     } catch (err) {
-      console.error('Error fetching clients:', err);
+      console.error('Error fetching captures:', err);
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
       if (retries > 0) {
         console.log(`Retrying in 1s... (${retries} left)`);
-        setTimeout(() => fetchClients(retries - 1), 1000);
+        setTimeout(() => fetchCaptures(retries - 1), 1000);
       } else {
-        setError(`Failed to load clients: ${errorMessage}. Check backend (port 8000) & Docker network.`);
+        setError(`Failed to load captures: ${errorMessage}. Check backend (port 8000) & Docker network.`);
       }
     } finally {
       setLoading(false);
@@ -115,46 +113,33 @@ const UserApp = () => {
   };
 
   useEffect(() => {
-    fetchClients();
+    fetchCaptures();
     fetchRegulatory();
   }, []);
 
-  const handleSelectCountry = (country: CountryProfileData) => {
-    console.log('Setting selectedCountry:', country);
-    setSelectedCountry(country);
-  };
-
-  const handleClearSelection = () => {
-    setSelectedCountry(null);
-  };
-
-  const totalClients = clients.length;
-  const impactedClients = useMemo(
-    () => clients.filter(c => c.newRegulation !== "N/A" && c.deadline !== null).length,
-    [clients]
+ 
+  const totalCaptures = captures.length;
+  const uniqueUsers = useMemo(() => new Set(captures.map(c => c.userId)).size, [captures]);
+  const recentCaptures = useMemo(
+    () => captures.filter(c => new Date(c.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length,
+    [captures]
   );
-  const percentageImpacted = totalClients > 0 ? (impactedClients / totalClients) : 0;
-  const uniqueNewRegs = useMemo(
-    () => [...new Set(clients.filter(c => c.newRegulation !== "N/A" && c.newRegulation !== "UNDER REVIEW" && c.newRegulation !== "MONITORED").map(c => c.newRegulation))].length,
-    [clients]
-  );
-  const percentageNewRegs = totalClients > 0 ? (uniqueNewRegs / totalClients) : 0;
+  const percentageRecent = totalCaptures > 0 ? (recentCaptures / totalCaptures) : 0;
 
   const currentDate = new Date();
-  let urgencyLevel = 'LOW';
-  let urgencyColor = 'green';
-  for (const c of clients) {
-    if (c.deadline) {
-      const deadline = new Date(c.deadline);
-      const daysUntilDeadline = (deadline.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24);
-      if (daysUntilDeadline <= 90) {
-        urgencyLevel = 'HIGH';
-        urgencyColor = 'red';
-        break;
-      } else if (daysUntilDeadline <= 180) {
-        urgencyLevel = 'MEDIUM';
-        urgencyColor = 'orange';
-      }
+  let activityLevel = 'LOW';
+  let activityColor = 'green';
+  if (totalCaptures > 0) {
+    const latestCapture = captures.reduce((latest, current) =>
+      new Date(current.createdAt) > new Date(latest.createdAt) ? current : latest
+    );
+    const daysSinceLast = (currentDate.getTime() - new Date(latestCapture.createdAt).getTime()) / (1000 * 60 * 60 * 24);
+    if (daysSinceLast <= 1) {
+      activityLevel = 'HIGH';
+      activityColor = 'red';
+    } else if (daysSinceLast <= 7) {
+      activityLevel = 'MEDIUM';
+      activityColor = 'orange';
     }
   }
 
@@ -162,7 +147,7 @@ const UserApp = () => {
     return (
       <Container maxWidth="lg" sx={{ py: 4 }}>
         <Alert severity="error" sx={{ mb: 2 }} action={
-          <Button color="inherit" size="small" onClick={() => { setLoading(true); setError(null); fetchClients(); }}>
+          <Button color="inherit" size="small" onClick={() => { setLoading(true); setError(null); fetchCaptures(); }}>
             Retry
           </Button>
         }>
@@ -176,7 +161,7 @@ const UserApp = () => {
     return (
       <Container maxWidth="lg" sx={{ py: 4, textAlign: 'center' }}>
         <CircularProgress />
-        <Typography variant="body1" sx={{ mt: 2 }}>Loading clients...</Typography>
+        <Typography variant="body1" sx={{ mt: 2 }}>Loading captures...</Typography>
       </Container>
     );
   }
@@ -208,29 +193,29 @@ const UserApp = () => {
               <Grid container spacing={2} justifyContent="center">
                 <Grid item xs={4}>
                   <Box sx={{ textAlign: 'center' }}>
-                    <CircularProgress variant="determinate" value={percentageImpacted * 100} size={120} thickness={4} sx={{ color: '#3b82f6' }} />
+                    <CircularProgress variant="determinate" value={100} size={120} thickness={4} sx={{ color: '#3b82f6' }} />
                     <Typography variant="h4" fontWeight="bold" color="blue.400" sx={{ mt: 1 }}>
-                      {impactedClients}
+                      {totalCaptures}
                     </Typography>
-                    <Typography variant="body2" color="grey.500" sx={{ mt: 1 }}>TOTAL CLIENTS IMPACTED</Typography>
+                    <Typography variant="body2" color="grey.500" sx={{ mt: 1 }}>TOTAL USER CAPTURES</Typography>
                   </Box>
                 </Grid>
                 <Grid item xs={4}>
                   <Box sx={{ textAlign: 'center' }}>
-                    <CircularProgress variant="determinate" value={percentageNewRegs * 100} size={120} thickness={4} sx={{ color: '#10b981' }} />
+                    <CircularProgress variant="determinate" value={100} size={120} thickness={4} sx={{ color: '#10b981' }} />
                     <Typography variant="h4" fontWeight="bold" color="green.400" sx={{ mt: 1 }}>
-                      {uniqueNewRegs}
+                      {uniqueUsers}
                     </Typography>
-                    <Typography variant="body2" color="grey.500" sx={{ mt: 1 }}>NEW REGULATIONS</Typography>
+                    <Typography variant="body2" color="grey.500" sx={{ mt: 1 }}>UNIQUE USERS</Typography>
                   </Box>
                 </Grid>
                 <Grid item xs={4}>
                   <Box sx={{ textAlign: 'center' }}>
-                    <CircularProgress variant="determinate" value={urgencyLevel === 'HIGH' ? 100 : urgencyLevel === 'MEDIUM' ? 50 : 0} size={120} thickness={4} sx={{ color: urgencyColor }} />
-                    <Typography variant="h5" fontWeight="bold" sx={{ mt: 1, color: urgencyColor === 'red' ? 'red.500' : urgencyColor === 'orange' ? 'orange.500' : 'success.main' }}>
-                      {urgencyLevel}
+                    <CircularProgress variant="determinate" value={activityLevel === 'HIGH' ? 100 : activityLevel === 'MEDIUM' ? 50 : 0} size={120} thickness={4} sx={{ color: activityColor }} />
+                    <Typography variant="h5" fontWeight="bold" sx={{ mt: 1, color: activityColor === 'red' ? 'red.500' : activityColor === 'orange' ? 'orange.500' : 'success.main' }}>
+                      {activityLevel}
                     </Typography>
-                    <Typography variant="body2" color="grey.500" sx={{ mt: 1 }}>URGENCY LEVEL</Typography>
+                    <Typography variant="body2" color="grey.500" sx={{ mt: 1 }}>ACTIVITY LEVEL</Typography>
                   </Box>
                 </Grid>
               </Grid>
@@ -239,10 +224,10 @@ const UserApp = () => {
 
           <Accordion sx={{ mb: 3, backgroundColor: '#112240', border: '1px solid #1e2d4a', boxShadow: 'none' }} defaultExpanded={true}>
             <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'grey.400' }} />}>
-              <Typography variant="h6" fontWeight="600" sx={{ color: 'grey.400' }}>Affected Client Profiles</Typography>
+              <Typography variant="h6" fontWeight="600" sx={{ color: 'grey.400' }}>User Captures</Typography>
             </AccordionSummary>
             <AccordionDetails sx={{ p: 0 }}>
-              <ClientProfiles clients={clients} />
+              <UserCaptures captures={captures} />
             </AccordionDetails>
           </Accordion>
           <Divider sx={{ my: 1, borderColor: '#1e2d4a' }} />
@@ -252,21 +237,9 @@ const UserApp = () => {
               <Typography variant="h6" fontWeight="600" sx={{ color: 'grey.400' }}>Country Profiles</Typography>
             </AccordionSummary>
             <AccordionDetails sx={{ p: 0 }}>
-              <CountryProfiles onSelectCountry={handleSelectCountry} />
             </AccordionDetails>
           </Accordion>
 
-          {selectedCountry && (
-            <Box sx={{ mb: 2 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h6">Detailed Profile: {selectedCountry.country}</Typography>
-                <Button variant="outlined" onClick={handleClearSelection} size="small">
-                  Close
-                </Button>
-              </Box>
-              <CountryProfile data={selectedCountry} />
-            </Box>
-          )}
           <Divider sx={{ my: 1, borderColor: '#1e2d4a' }} />
 
           <Card sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a' }}>

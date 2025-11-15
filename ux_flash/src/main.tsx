@@ -20,7 +20,6 @@ import AppTheme from './components/ux/shared-theme/AppTheme';
 //import Blog from './components/ux/blog/Blog';
 //import Tutorials from './components/ux/components/Tutorials';
 import UserApp from './components/User/UserApp';
-import SimpleUserApp from './components/User/SimpleUserApp';
 
 
 const rootElement = document.getElementById('root');
@@ -34,8 +33,7 @@ if (rootElement) {
               <CssBaseline enableColorScheme />
               <AppAppBar />
               <Routes>
-                <Route path="/dash-data" element={<UserApp />} />                
-                <Route path="/dashboard" element={<SimpleUserApp />} />                
+                <Route path="/dashboard" element={<UserApp />} />                       
                 <Route
                   path="/"
                   element={
