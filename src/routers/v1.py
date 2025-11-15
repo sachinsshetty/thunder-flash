@@ -1,30 +1,21 @@
 # routers/v1.py
-from fastapi import APIRouter, File, UploadFile, Form, Query, Header, HTTPException
+from fastapi import APIRouter, File, UploadFile, Form, Query, Header, HTTPException, Depends, status
 from typing import Optional
 from datetime import datetime
+from sqlalchemy.orm import Session
+from typing import List
 from models import (
     ChatRequest, ChatResponse, VisualQueryResponse, ExtractTextResponse, PdfSummaryResponse
 )
 from routers.core import upload_image_query_endpoint
 from config import DEFAULT_SYSTEM_PROMPT
-
-router = APIRouter(prefix="/v1", tags=["v1"])
-
-# File: routers/v1.py (new - endpoints for UserCapture with prefix /v1)
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-from typing import List
 from database import get_db, UserCapture
 from schemas import UserCaptureCreate, UserCaptureUpdate, UserCaptureResponse
 import logging
 
 logger = logging.getLogger(__name__)
 
-#router = APIRouter(prefix="/v1", tags=["user-captures"])
-
-# Dependency injection for database session
-def get_db_session(db: Session = Depends(get_db)):
-    return db
+router = APIRouter(prefix="/v1", tags=["v1"])
 
 @router.get("/user-captures/", response_model=List[UserCaptureResponse])
 def read_user_captures(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
@@ -39,7 +30,7 @@ def read_user_captures(skip: int = 0, limit: int = 100, db: Session = Depends(ge
         logger.error(f"Error retrieving user captures: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
-@router.get("/user-captures/{user_id}", response_model=UserCaptureResponse)
+@router.get("/user-captures/by-user/{user_id}", response_model=UserCaptureResponse)
 def read_user_capture_by_user_id(user_id: str, db: Session = Depends(get_db)):
     """
     Retrieve a specific user capture by user_id.
@@ -53,6 +44,22 @@ def read_user_capture_by_user_id(user_id: str, db: Session = Depends(get_db)):
         raise
     except Exception as e:
         logger.error(f"Error retrieving user capture for user_id {user_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@router.get("/user-captures/{capture_id}", response_model=UserCaptureResponse)
+def read_user_capture_by_capture_id(capture_id: int, db: Session = Depends(get_db)):
+    """
+    Retrieve a specific user capture by capture_id.
+    """
+    try:
+        capture = db.query(UserCapture).filter(UserCapture.id == capture_id).first()
+        if capture is None:
+            raise HTTPException(status_code=404, detail="User capture not found")
+        return capture
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error retrieving user capture for capture_id {capture_id}: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @router.post("/user-captures/", response_model=UserCaptureResponse, status_code=status.HTTP_201_CREATED)
@@ -168,15 +175,20 @@ async def indic_visual_query_endpoint(
     query: str = Form(...),
     src_lang: str = Query("eng_Latn"),
     tgt_lang: str = Query("eng_Latn"),
-    api_key: Optional[str] = Header(None)
+    api_key: Optional[str] = Header(None),
+    db: Session = Depends(get_db)
 ):
     """Handle visual queries via image upload."""
     # In production, validate api_key
     # Pass system_prompt explicitly when calling internally
+    # Note: upload_image_query_endpoint now requires db, but since it's async and Depends, it should work
     response_content = await upload_image_query_endpoint(
         text=query, 
         system_prompt=DEFAULT_SYSTEM_PROMPT, 
-        file=file
+        lat=52.5200,  # Default lat
+        lon=13.4050,  # Default lon
+        file=file,
+        db=db
     )
     return VisualQueryResponse(
         answer=response_content["response"],
