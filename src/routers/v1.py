@@ -30,7 +30,7 @@ def read_user_captures(skip: int = 0, limit: int = 100, db: Session = Depends(ge
         logger.error(f"Error retrieving user captures: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
-@router.get("/user-captures/{user_id}", response_model=UserCaptureResponse)
+@router.get("/user-captures/by-user/{user_id}", response_model=UserCaptureResponse)
 def read_user_capture_by_user_id(user_id: str, db: Session = Depends(get_db)):
     """
     Retrieve a specific user capture by user_id.
