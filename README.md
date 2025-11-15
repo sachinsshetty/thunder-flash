@@ -20,4 +20,6 @@
 
 - Idea - [v1-doc](docs/ideas-v1.md)
 
-- Deployment [doc](docs/deployment.md)
+- Deployment [doc](docs/deployment.md) 
+
+- Video Edit : ./docs/split.sh input.mp4 output.mp4
