@@ -1,4 +1,4 @@
-# File: database.py (updated - added query_text and ai_response columns to UserCapture)
+# File: database.py (updated - load mock data from separate JSON file with defaults for new fields)
 import os
 import json
 from pathlib import Path
@@ -50,7 +50,14 @@ async def startup_event():
                     with open(MOCK_DATA_JSON, 'r', encoding='utf-8') as jsonfile:
                         mock_data = json.load(jsonfile)
                     
-                    logger.info(f"Loaded {len(mock_data)} user captures from JSON.")
+                    # Add defaults for new fields if missing (for backward compatibility)
+                    for data in mock_data:
+                        if "query_text" not in data:
+                            data["query_text"] = "What is this weapon?"
+                        if "ai_response" not in data:
+                            data["ai_response"] = "This is a mock identification response for the image."
+                    
+                    logger.info(f"Loaded {len(mock_data)} user captures from JSON with defaults applied.")
                 except Exception as e:
                     logger.error(f"Failed to load mock data JSON: {str(e)}. Skipping mock data insertion.")
                     mock_data = []

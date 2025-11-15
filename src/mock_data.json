@@ -1,152 +1,203 @@
 [
   {
     "user_id": "user_001",
+    "query_text": "What is this weapon?",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 51.75536,
-    "longitude": 11.434845
+    "longitude": 11.434845,
+    "ai_response": "This appears to be an AK-47 assault rifle, a Soviet-designed automatic firearm."
   },
   {
     "user_id": "user_002",
+    "query_text": "Is this a gun?",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 48.616601,
-    "longitude": 9.916761
+    "longitude": 9.916761,
+    "ai_response": "Yes, this is a Beretta 92 pistol, a semi-automatic handgun commonly used by military forces."
   },
   {
     "user_id": "user_003",
+    "query_text": "Identify this firearm",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 51.475427,
-    "longitude": 12.999005
+    "longitude": 12.999005,
+    "ai_response": "This is an M16 rifle, a lightweight, air-cooled, magazine-fed assault rifle."
   },
   {
     "user_id": "user_004",
+    "query_text": "What type of rifle is this?",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 49.99246,
-    "longitude": 6.744602
+    "longitude": 6.744602,
+    "ai_response": "This is a Remington 700 bolt-action rifle, often used for hunting and sniping."
   },
   {
     "user_id": "user_005",
+    "query_text": "Can you name this pistol?",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 54.397124,
-    "longitude": 6.247773
+    "longitude": 6.247773,
+    "ai_response": "This is a Glock 17, a polymer-framed semi-automatic pistol popular in law enforcement."
   },
   {
     "user_id": "user_006",
+    "query_text": "What kind of shotgun is this?",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 49.794155,
-    "longitude": 9.383037
+    "longitude": 9.383037,
+    "ai_response": "This is a Mossberg 500 pump-action shotgun, versatile for home defense and hunting."
   },
   {
     "user_id": "user_007",
+    "query_text": "Is this a sniper rifle?",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 49.091065,
-    "longitude": 8.826214
+    "longitude": 8.826214,
+    "ai_response": "Yes, this is a Barrett M82, a semi-automatic anti-materiel rifle chambered in .50 BMG."
   },
   {
     "user_id": "user_008",
+    "query_text": "Tell me about this machine gun",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 47.949651,
-    "longitude": 10.202047
+    "longitude": 10.202047,
+    "ai_response": "This is an M249 light machine gun, a belt-fed squad automatic weapon based on the FN Minimi."
   },
   {
     "user_id": "user_009",
+    "query_text": "What weapon is shown here?",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 50.303327,
-    "longitude": 8.780366
+    "longitude": 8.780366,
+    "ai_response": "This is a Desert Eagle pistol, a large-caliber semi-automatic handgun known for its power."
   },
   {
     "user_id": "user_010",
+    "query_text": "Identify the assault rifle",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 53.76666,
-    "longitude": 10.739327
+    "longitude": 10.739327,
+    "ai_response": "This is a Steyr AUG, a bullpup assault rifle with a modular design."
   },
   {
     "user_id": "user_011",
+    "query_text": "What is this handgun?",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 49.559183,
-    "longitude": 8.935931
+    "longitude": 8.935931,
+    "ai_response": "This is a Smith & Wesson M&P, a polymer-framed semi-automatic pistol series."
   },
   {
     "user_id": "user_012",
+    "query_text": "Looks like a carbine, right?",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 53.291828,
-    "longitude": 13.304434
+    "longitude": 13.304434,
+    "ai_response": "Yes, this is an M4 carbine, a shorter variant of the M16 used by the U.S. military."
   },
   {
     "user_id": "user_013",
+    "query_text": "Name this submachine gun",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 47.798171,
-    "longitude": 14.552354
+    "longitude": 14.552354,
+    "ai_response": "This is a MP5, a roller-delayed blowback submachine gun developed by Heckler & Koch."
   },
   {
     "user_id": "user_014",
+    "query_text": "What type of firearm?",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 52.520975,
-    "longitude": 12.865962
+    "longitude": 12.865962,
+    "ai_response": "This is a FN SCAR, a family of modular assault rifles used by special forces."
   },
   {
     "user_id": "user_015",
+    "query_text": "Is this a revolver?",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 47.975209,
-    "longitude": 13.715369
+    "longitude": 13.715369,
+    "ai_response": "Yes, this is a Colt Python revolver, a double-action handgun chambered in .357 Magnum."
   },
   {
     "user_id": "user_016",
+    "query_text": "Identify this rifle please",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 50.531399,
-    "longitude": 14.439903
+    "longitude": 14.439903,
+    "ai_response": "This is a Ruger Mini-14, a semi-automatic rifle similar in appearance to the M14."
   },
   {
     "user_id": "user_017",
+    "query_text": "What gun is that?",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 48.147851,
-    "longitude": 7.769744
+    "longitude": 7.769744,
+    "ai_response": "This is a Sig Sauer P226, a full-sized service pistol used by various militaries."
   },
   {
     "user_id": "user_018",
+    "query_text": "Looks military, what is it?",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 50.01972,
-    "longitude": 7.508883
+    "longitude": 7.508883,
+    "ai_response": "This is a HK416 assault rifle, a gas-operated rifle based on the AR-15 platform."
   },
   {
     "user_id": "user_019",
+    "query_text": "Pistol identification",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 54.468449,
-    "longitude": 14.850646
+    "longitude": 14.850646,
+    "ai_response": "This is a Walther PPK, a semi-automatic pistol famously associated with James Bond."
   },
   {
     "user_id": "user_020",
+    "query_text": "What is this shotgun?",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 48.034049,
-    "longitude": 7.922731
+    "longitude": 7.922731,
+    "ai_response": "This is a Remington 870, a pump-action shotgun widely used for police and civilian purposes."
   },
   {
     "user_id": "user_021",
+    "query_text": "Rifle type?",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 49.076438,
-    "longitude": 9.922362
+    "longitude": 9.922362,
+    "ai_response": "This is a AR-15 semi-automatic rifle, a civilian version of the military M16."
   },
   {
     "user_id": "user_022",
+    "query_text": "Help identify this weapon",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 51.102789,
-    "longitude": 6.69241
+    "longitude": 6.69241,
+    "ai_response": "This is a Thompson submachine gun, known as the 'Tommy Gun' from WWII."
   },
   {
     "user_id": "user_023",
+    "query_text": "What model is this carbine?",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 50.962261,
-    "longitude": 12.578228
+    "longitude": 12.578228,
+    "ai_response": "This is a Ruger PC Carbine, a semi-automatic carbine compatible with pistol magazines."
   },
   {
     "user_id": "user_024",
+    "query_text": "Machine gun or rifle?",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 53.674878,
-    "longitude": 15.001329
+    "longitude": 15.001329,
+    "ai_response": "This is a PK machine gun, a belt-fed general-purpose machine gun of Soviet origin."
   },
   {
     "user_id": "user_025",
+    "query_text": "Quick ID on this pistol",
     "image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
     "latitude": 47.391196,
-    "longitude": 7.747504
+    "longitude": 7.747504,
+    "ai_response": "This is a CZ 75, a semi-automatic pistol with a short recoil operating system."
   }
 ]
+
