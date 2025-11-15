@@ -5,6 +5,7 @@ import base64
 import uuid
 from datetime import datetime
 from sqlalchemy.orm import Session
+
 from models import TextQueryRequest, ImageQueryRequest
 from clients import client
 from config import DEFAULT_SYSTEM_PROMPT
@@ -94,16 +95,14 @@ async def upload_image_query_endpoint(
         user_id = str(uuid.uuid4())
 
         # Prepare data for UserCapture insertion
-        # Assuming UserCaptureCreate schema includes fields like: user_id, query_text, image_data, lat, lon, created_at, ai_response
-        # Adjust fields as per your actual schema; created_at will be auto-set if not provided
         capture_create = UserCaptureCreate(
             user_id=user_id,
             query_text=text,
-            image_data=image_url,  # Store base64 image URL
-            lat=lat,
-            lon=lon,
-            ai_response=ai_response,
-            created_at=datetime.utcnow()  # Explicitly set if not auto-generated
+            image=image_url,  # Store base64 image URL
+            latitude=lat,
+            longitude=lon,
+            ai_response=ai_response
+            # created_at auto-generated
         )
 
         # Check for existing (though unlikely with UUID)

@@ -1,4 +1,4 @@
-# File: database.py (updated - added mock data insertion for UserCapture)
+# File: database.py (updated - added query_text and ai_response columns to UserCapture)
 import os
 import json
 from pathlib import Path
@@ -22,9 +22,11 @@ class UserCapture(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(String, index=True)
+    query_text = Column(Text)
     image = Column(Text)  # Base64 encoded string
     latitude = Column(Float)
     longitude = Column(Float)
+    ai_response = Column(Text)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 Base.metadata.create_all(bind=engine)
