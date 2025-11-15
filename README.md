@@ -14,8 +14,21 @@
 
 --
 
-docker build -t dwani/thunder-server:latest -f server.Dockerfile .
+- Server 
+    - build
+```bash
+cd src
 
+docker build -t dwani/thunder-server:latest -f server.Dockerfile .
+```
+
+- Client
+    - build
+```bash
+cd ux_flash
+docker build -t dwani/thunder-ux -f client.Dockerfile .
+
+```
 
 docker compose -f server-compose.yml up -d
 
@@ -25,3 +38,5 @@ docker push dwani/thunder-server:latest
 - Deploy VLM model
 cd deploy
 docker compose -f vllm-qwen.yml up -d
+
+
