@@ -1,5 +1,7 @@
 # Thunder Flash
 
+<img src="docs/weapon-watch-icon.png" alt="icon" width="150" height="150">
+
 - CIHBw-4	Bomb-Lense	 - [challenge](challenge.md)
 
 - [App Video Demo]() - 
