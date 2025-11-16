@@ -9,7 +9,7 @@
     - ![system-diagram](docs/bomb-watch-v1.jpg "system-diagram")
 
     - Stage 2
-    - ![system-diagram](docs/thunder-v1.jpg "system-diagram")
+    - ![system-diagram](docs/weapon-wtach-v2.jpg "system-diagram")
 
 - Entity Relationshop Model - [document](docs/database-er-design.md)
     
