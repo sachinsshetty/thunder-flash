@@ -4,16 +4,8 @@ OUTPUT="$2"
 
 # Extract segments
 segments=(
-    "00:00:06 00:00:08 segment_1"
-    "00:00:20 00:00:02 segment_2"
-    "00:00:39 00:00:04 segment_3"
-    "00:00:50 00:00:02 segment_4"
-    "00:01:30 00:00:02 segment_5"
-    "00:01:36 00:00:02 segment_6"
-    "00:02:30 00:00:01 segment_7"
-    "00:02:39 00:00:03 segment_8"
-    "00:02:45 00:00:05 segment_9"
-    "00:02:54 00:00:03 segment_10"
+    "00:00:03 00:02:00 segment_1"
+    "00:02:03 00:01:00 segment_2"
 )
 
 for i in "${!segments[@]}"; do
@@ -25,7 +17,7 @@ done
 
 # Create list file
 > segments.txt
-for seg in segment_{1..10}; do
+for seg in segment_{1..2}; do
     echo "file '$seg.mp4'" >> segments.txt
 done
 
