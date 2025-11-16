@@ -1,11 +1,13 @@
-Continous bombardment of cities in Ukraine, has made life 
-dangerous for civilans due to unexploded bombs, causing damage 
-from accidental contact.
+Amid Ukraine's relentless bombardment,
 
-I am sachin, with 15 years of software and computer vision experience.
+ unexploded ordnance turns everyday life into a deadly gamble for civilians
+ 
+ —one wrong step, and tragedy strikes.
+ 
+ I'm Sachin, with 15 years experience in software and computer vision.
+ 
+Our team crushed the Bomb Lens Challenge by building a smart app,
 
-We have tackled Bomb Lense Challenge and built a solution to identify weapons and notify authorites with its location.
-
-This is our working demo.
-You can down the App and use it Now .
-
+ that civilian can use to identify weapons in real-time, pinpoints their exact location via GPS, and instantly alerts authorities for safe removal.
+ 
+ Check out our live demo—download the app now and help save lives today.
