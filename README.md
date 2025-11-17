@@ -21,12 +21,7 @@
 
 | Image Capture From App | Information from Image | Battlefield Management Software | BMS- Image Verification |
 |--------------------|-----------------------|-----------------------|-------------------------------|
-| ![image-capture](images/mobile-app/1_app_capture.png "image-capture") | ![app-information](images/mobile-app/2_app_system_response.png "app-response") | ![bms-tracker](images/mobile-app/3_bms_issue_tracker.png "bms-tracker") |
-| ![bms-image-tracker](images/mobile-app/4_bms_issue_image.png "bms-image-verfiy") |                     |                       |                               |
-|                    |                       |                       |                               |
-|                    |                       |                       |                               |
-
-
+| ![image-capture](images/mobile-app/1_app_capture.png "image-capture") | ![app-information](images/mobile-app/2_app_system_response.png "app-response") | ![bms-tracker](images/mobile-app/3_bms_issue_tracker.png "bms-tracker") | ![bms-image-tracker](images/mobile-app/4_bms_issue_image.png "bms-image-verfiy") |  
 - Entity Relationshop Model - [document](docs/database-er-design.md)
     
 - Tasks
