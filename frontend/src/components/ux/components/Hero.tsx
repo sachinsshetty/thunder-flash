@@ -1,4 +1,4 @@
-// Hero.jsx (updated for WeaponWatch AI - English version)
+// Hero.jsx (updated for GardenWatch AI - Gardener Training & Maintenance Assistant App)
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -14,9 +14,13 @@ import {
   WarningOutlined,
   LocationOnOutlined,
   NotificationsOutlined,
+  SpaOutlined,
+  YardOutlined,
+  LocalFloristOutlined,
+  PestControlOutlined,
 } from '@mui/icons-material';
 
-// Styled FeatureCard (unchanged from your original code)
+// Styled cards (unchanged)
 const FeatureCard = styled(Box)(({ theme }) => ({
   padding: theme.spacing(3),
   borderRadius: theme.shape.borderRadius,
@@ -28,14 +32,8 @@ const FeatureCard = styled(Box)(({ theme }) => ({
     transform: 'scale(1.05)',
     boxShadow: theme.shadows[4],
   },
-  '&:focus-within': {
-    transform: 'scale(1.05)',
-    boxShadow: theme.shadows[4],
-    outline: `2px solid ${theme.palette.primary.main}`,
-  },
 }));
 
-// Styled Problem/Solution Card
 const ProblemSolutionCard = styled(Box)(({ theme }) => ({
   padding: theme.spacing(3),
   borderRadius: theme.shape.borderRadius,
@@ -53,96 +51,95 @@ const ProblemSolutionCard = styled(Box)(({ theme }) => ({
   textAlign: 'center',
 }));
 
-// Data for Problem and Solution sections (adapted for WeaponWatch AI - English)
+// Updated content for GardenWatch AI
 const problems = [
   {
-    text: 'Difficulties in quickly detecting suspicious military items',
+    text: 'Hard to spot weeds, dead plants, or pests early',
     icon: <VisibilityOffOutlined color="error" fontSize="large" />,
     chipLabel: 'Detection',
   },
   {
-    text: 'High risk from unidentified threats in the civilian population',
+    text: 'Overgrown paths and unsafe garden areas',
     icon: <WarningOutlined color="error" fontSize="large" />,
-    chipLabel: 'Security',
+    chipLabel: 'Safety',
   },
   {
-    text: 'Delayed responses to suspicious sightings on-site',
+    text: 'Time-consuming manual inspections of large parks',
     icon: <LocationOnOutlined color="error" fontSize="large" />,
-    chipLabel: 'Response',
+    chipLabel: 'Efficiency',
   },
   {
-    text: 'Lack of public awareness and coordination in threats',
+    text: 'Inconsistent maintenance quality across teams',
     icon: <NotificationsOutlined color="error" fontSize="large" />,
-    chipLabel: 'Awareness',
+    chipLabel: 'Training',
   },
 ];
 
 const solutions = [
   {
-    text: 'From passive observation to active citizen watch: Instant AI identification',
-    icon: <VisibilityOffOutlined color="primary" fontSize="large" />,
-    chipLabel: 'For Civilians',
+    text: 'Instant AI analysis of garden & park photos',
+    icon: <SpaOutlined color="primary" fontSize="large" />,
+    chipLabel: 'AI Scan',
   },
   {
-    text: 'Secure notifications and real-time alerts for maximum safety',
+    text: 'Clear priority list of issues + required tools',
     icon: <WarningOutlined color="primary" fontSize="large" />,
-    chipLabel: 'Notifications',
+    chipLabel: 'Action Plan',
   },
   {
-    text: 'Community network for reporting and rapid escalation',
+    text: 'Precise location tagging for maintenance crews',
     icon: <LocationOnOutlined color="primary" fontSize="large" />,
-    chipLabel: 'Network',
+    chipLabel: 'Geo-Tagging',
   },
   {
-    text: 'Educational resources and training modules for proactive threat recognition',
-    icon: <NotificationsOutlined color="primary" fontSize="large" />,
+    text: 'Training mode with real-world examples for gardeners',
+    icon: <LocalFloristOutlined color="primary" fontSize="large" />,
     chipLabel: 'Education',
   },
 ];
 
 const features = [
   {
-    title: 'Small Arms Detection',
-    description: 'AI Model: Instant classification and risk assessment for common firearms.',
-    components: 'Image Analysis',
+    title: 'Weed & Invasive Plant Detection',
+    description: 'Identifies common weeds and invasive species instantly.',
+    components: 'Image AI',
     hardware: 'Mobile GPU',
   },
   {
-    title: 'Explosives Identification',
-    description: 'Detection of potential explosive devices through visual and contextual analysis.',
-    components: 'Sensor Integration',
+    title: 'Plant Health Assessment',
+    description: 'Detects dead leaves, disease, pests, and nutrient deficiency.',
+    components: 'Multimodal AI',
     hardware: 'CPU/GPU',
   },
   {
-    title: 'Vehicle & Drone Surveillance',
-    description: 'Scalable alerts for military vehicles and UAVs in civilian areas.',
-    components: 'Real-Time Dashboard',
+    title: 'Path & Infrastructure Check',
+    description: 'Spots overgrown paths, litter, broken benches, and debris.',
+    components: 'Object Detection',
     hardware: 'GPU',
   },
   {
-    title: 'Advanced Threat Modules',
-    description: 'Customizable for additional categories with community feedback and ML training.',
-    components: 'Multimodal AI',
+    title: 'Tool Recommendation Engine',
+    description: 'Suggests exact tools needed: pruners, mower, rake, etc.',
+    components: 'Reasoning Layer',
     hardware: 'CPU/GPU',
   },
 ];
 
-// Main Hero Component (now for WeaponWatch AI informational content - English)
 export default function Hero() {
   return (
     <>
-      <title>WeaponWatch AI | Civilian Weapons Identification System</title>
+      <title>GardenWatch AI | AI Garden & Park Maintenance Assistant</title>
       <meta
         name="description"
-        content="Discover WeaponWatch AI, powered by dwani.ai – an AI platform for civilians to identify suspicious military items, send notifications, and exchange information. From small arms to drones: Stay safe and informed."
+        content="GardenWatch AI – Upload a photo of any garden or park and get instant maintenance analysis: weeds, dead plants, litter, required tools, and prioritized actions."
       />
       <meta
         name="keywords"
-        content="WeaponWatch AI, dwani.ai, weapons detection, suspicious military items, civilian safety, AI alerts, small arms, explosives, drone surveillance"
+        content="GardenWatch AI, garden maintenance, park assistant, weed detection, plant health, landscaping AI, gardener training, lawn care"
       />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta name="robots" content="index, follow" />
-      <link rel="canonical" href="https://uberWatch" />
+      <link rel="canonical" href="https://gardenwatch.ai" />
 
       <Box
         id="hero"
@@ -151,10 +148,10 @@ export default function Hero() {
           width: '100%',
           backgroundRepeat: 'no-repeat',
           backgroundImage:
-            'radial-gradient(ellipse 80% 50% at 50% -20%, hsl(210, 100%, 90%), transparent)',
+            'radial-gradient(ellipse 80% 50% at 50% -20%, hsl(140, 70%, 85%), transparent)',
           ...theme.applyStyles('dark', {
             backgroundImage:
-              'radial-gradient(ellipse 80% 50% at 50% -20%, hsl(210, 100%, 16%), transparent)',
+              'radial-gradient(ellipse 80% 50% at 50% -20%, hsl(140, 70%, 20%), transparent)',
           }),
           py: { xs: 8, sm: 12 },
         })}
@@ -184,8 +181,9 @@ export default function Hero() {
                 textAlign: 'center',
               }}
             >
-              WeaponWatch AI
+              GardenWatch AI
             </Typography>
+
             <Typography
               variant="h6"
               component="h2"
@@ -195,211 +193,111 @@ export default function Hero() {
                 fontWeight: 'medium',
               }}
             >
-              Powered by dwani.ai
+              Your AI Assistant for Garden & Park Maintenance
             </Typography>
 
             <Divider sx={{ width: '60%', mx: 'auto', my: 2 }} />
 
-            <Typography
-              variant="body1"
-              sx={{ textAlign: 'center', color: 'text.secondary' }}
-            >
-              Civilian Weapons Identification: From Uncertainty to Collective Vigilance
-            </Typography>
-
-            <Divider sx={{ width: '60%', mx: 'auto', my: 2 }} />
-
-            <Typography
-              variant="body1"
-              sx={{ textAlign: 'center', color: 'text.secondary' }}
-            >
-              From sighting to secure reporting in seconds. Explore the{' '}
-              <Link
-                href="https://watch.dwani.ai/dashboard"
-                target="_blank"
-                color="primary"
-                aria-label="dwani.ai WeaponWatch Dashboard"
-              >
-                AI Workflow
-              </Link>.
+            <Typography variant="body1" sx={{ textAlign: 'center', color: 'text.secondary' }}>
+              Upload a photo → Get instant analysis of weeds, dead plants, litter, and the exact tools needed.
             </Typography>
 
             <Button
               variant="contained"
-              color="primary"
+              color="success"
               href="https://watch.dwani.ai/dashboard"
               target="_blank"
               size="large"
-              sx={{ mt: 2, px: 4, py: 1.5, borderRadius: 2 }}
-              aria-label="Try Weapon Identification App"
+              sx={{ mt: 2, px: 5, py: 1.5, borderRadius: 2 }}
+              aria-label="Open GardenWatch AI App"
             >
-              Try the App
+              Open the App
             </Button>
 
             <Divider sx={{ width: '60%', mx: 'auto', my: 2 }} />
 
-            {/* Problem Section */}
-            <Stack
-              spacing={4}
-              useFlexGap
-              sx={{ alignItems: 'center', width: '100%', mt: 8 }}
-            >
-              <Typography
-                variant="h4"
-                component="h3"
-                sx={{ textAlign: 'center', fontWeight: 'bold' }}
-              >
-                Threats from undetected weapons are an everyday risk factor
+            {/* Problems */}
+            <Stack spacing={4} useFlexGap sx={{ alignItems: 'center', width: '100%', mt: 8 }}>
+              <Typography variant="h4" component="h3" sx={{ textAlign: 'center', fontWeight: 'bold' }}>
+                Common Garden & Park Maintenance Challenges
               </Typography>
               <Grid container spacing={3}>
                 {problems.map((problem, index) => (
                   <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
                     <ProblemSolutionCard tabIndex={0}>
                       <Box sx={{ mb: 2 }}>{problem.icon}</Box>
-                      <Typography
-                        variant="body2"
-                        sx={{ color: 'text.secondary', mb: 1 }}
-                      >
+                      <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
                         {problem.text}
                       </Typography>
-                      <Chip
-                        label={problem.chipLabel}
-                        color="error"
-                        variant="outlined"
-                        size="small"
-                      />
+                      <Chip label={problem.chipLabel} color="error" variant="outlined" size="small" />
                     </ProblemSolutionCard>
                   </Grid>
                 ))}
               </Grid>
             </Stack>
 
-            {/* Solution Section */}
-            <Stack
-              spacing={4}
-              useFlexGap
-              sx={{ alignItems: 'center', width: '100%', mt: 6 }}
-            >
-              <Typography
-                variant="h4"
-                component="h3"
-                sx={{ textAlign: 'center', fontWeight: 'bold' }}
-              >
-                The Protective Solution for Civilians
+            {/* Solutions */}
+            <Stack spacing={4} useFlexGap sx={{ alignItems: 'center', width: '100%', mt: 6 }}>
+              <Typography variant="h4" component="h3" sx={{ textAlign: 'center', fontWeight: 'bold' }}>
+                GardenWatch AI Makes It Simple
               </Typography>
               <Grid container spacing={3}>
                 {solutions.map((solution, index) => (
                   <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
                     <ProblemSolutionCard tabIndex={0}>
                       <Box sx={{ mb: 2 }}>{solution.icon}</Box>
-                      <Typography
-                        variant="body2"
-                        sx={{ color: 'text.secondary', mb: 1 }}
-                      >
+                      <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
                         {solution.text}
                       </Typography>
-                      <Chip
-                        label={solution.chipLabel}
-                        color="primary"
-                        variant="outlined"
-                        size="small"
-                      />
+                      <Chip label={solution.chipLabel} color="primary" variant="outlined" size="small" />
                     </ProblemSolutionCard>
                   </Grid>
                 ))}
               </Grid>
             </Stack>
-          </Stack>
 
-          {/* Features Section */}
-          <Stack
-            spacing={4}
-            useFlexGap
-            sx={{ alignItems: 'center', width: '100%', mt: 8 }}
-          >
-            <Typography
-              variant="h4"
-              component="h2"
-              sx={{ textAlign: 'center', fontWeight: 'bold' }}
-            >
-              Expandable Modules & Notification Workflow
-            </Typography>
-            <Grid container spacing={3}>
-              {features.map((feature, index) => (
-                <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
-                  <FeatureCard tabIndex={0}>
-                    <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
-                      {feature.title}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: 'text.secondary', mt: 1 }}
-                    >
-                      {feature.description}
-                    </Typography>
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      sx={{ mt: 2, justifyContent: 'center' }}
-                    >
-                      <Chip
-                        label={feature.components}
-                        color="primary"
-                        variant="outlined"
-                        size="small"
-                      />
-                      <Chip
-                        label={feature.hardware}
-                        color="secondary"
-                        variant="outlined"
-                        size="small"
-                      />
-                    </Stack>
-                  </FeatureCard>
-                </Grid>
-              ))}
-            </Grid>
-          </Stack>
+            {/* Features */}
+            <Stack spacing={4} useFlexGap sx={{ alignItems: 'center', width: '100%', mt: 8 }}>
+              <Typography variant="h4" component="h2" sx={{ textAlign: 'center', fontWeight: 'bold' }}>
+                Core Detection & Training Modules
+              </Typography>
+              <Grid container spacing={3}>
+                {features.map((feature, index) => (
+                  <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
+                    <FeatureCard tabIndex={0}>
+                      <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
+                        {feature.title}
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: 'text.secondary', mt: 1 }}>
+                        {feature.description}
+                      </Typography>
+                      <Stack direction="row" spacing={1} sx={{ mt: 2, justifyContent: 'center' }}>
+                        <Chip label={feature.components} color="primary" variant="outlined" size="small" />
+                        <Chip label={feature.hardware} color="secondary" variant="outlined" size="small" />
+                      </Stack>
+                    </FeatureCard>
+                  </Grid>
+                ))}
+              </Grid>
+            </Stack>
 
-          {/* Contact Section */}
-          <Stack
-            spacing={2}
-            useFlexGap
-            sx={{ alignItems: 'center', width: '100%', mt: 8 }}
-          >
-            <Divider sx={{ width: '60%', mx: 'auto', my: 2 }} />
-            <Typography
-              variant="h4"
-              component="h2"
-              sx={{ textAlign: 'center', fontWeight: 'bold' }}
-            >
-              Contact Us
-            </Typography>
-            <Typography
-              variant="body1"
-              sx={{ textAlign: 'center', color: 'text.secondary' }}
-            >
-              Join our{' '}
-              <Link
-                href="https://discord.gg/9Fq8J9Gnz3"
-                target="_blank"
-                color="primary"
-                aria-label="Join dwani.ai Discord community"
-              >
-                Discord Community
-              </Link>{' '}
-              for collaborations and feedback.
-              <br />
-              Have questions?{' '}
-              <Link
-                href="https://calendar.app.google/j1L2Sh6sExfWpUTZ7"
-                target="_blank"
-                color="primary"
-                aria-label="Schedule a demo with dwani.ai"
-              >
-                Schedule a Meeting
-              </Link>.
-            </Typography>
+            {/* Contact */}
+            <Stack spacing={2} useFlexGap sx={{ alignItems: 'center', width: '100%', mt: 8 }}>
+              <Divider sx={{ width: '60%', mx: 'auto', my: 2 }} />
+              <Typography variant="h4" component="h2" sx={{ textAlign: 'center', fontWeight: 'bold' }}>
+                Ready to Keep Gardens Beautiful?
+              </Typography>
+              <Typography variant="body1" sx={{ textAlign: 'center', color: 'text.secondary' }}>
+                Join our community of gardeners and park managers.<br />
+                <Link href="https://discord.gg/9Fq8J9Gnz3" target="_blank" color="primary">
+                  Discord Community
+                </Link>{' '}
+                •{' '}
+                <Link href="https://calendar.app.google/j1L2Sh6sExfWpUTZ7" target="_blank" color="primary">
+                  Book a Demo
+                </Link>
+              </Typography>
+            </Stack>
           </Stack>
         </Container>
       </Box>
