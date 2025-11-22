@@ -1,6 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Container, Grid, Typography, Card, CardContent, Button, Box, CircularProgress, Alert, Avatar, Divider, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import React, { useState, useEffect } from 'react';
+import { Container, Box, Typography, CircularProgress, Alert, Button } from '@mui/material';
 import UserCaptures from './UserCaptures';
 
 interface UserCapture {
@@ -15,8 +14,9 @@ interface UserCapture {
 }
 
 const camelizeKeys = (obj: any): any => {
-  const camelize = (str: string): string => str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
-  
+  const camelize = (str: string): string =>
+    str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+
   if (Array.isArray(obj)) {
     return obj.map(camelizeKeys);
   } else if (obj !== null && typeof obj === 'object') {
@@ -41,205 +41,116 @@ const getApiBaseUrl = (): string => {
 
 const UserApp = () => {
   const [captures, setCaptures] = useState<UserCapture[]>([]);
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
- 
+  const [error, setError] = useState<string | null>(null);
+
   const fetchCaptures = async (retries = 3) => {
     try {
-      const DWANI_API_BASE_URL = getApiBaseUrl();
-      const apiUrl = `${DWANI_API_BASE_URL}/v1/user-captures`;
+      const apiUrl = `${getApiBaseUrl()}/v1/user-captures`;
+      console.log('Fetching captures from:', apiUrl);
 
-      console.log('Fetching from:', apiUrl);
-      
       const res = await fetch(apiUrl);
       if (!res.ok) {
-        const errorText = await res.text();
-        console.error(`HTTP ${res.status}: ${res.statusText} - Body: ${errorText}`);
-        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        const text = await res.text();
+        throw new Error(`HTTP ${res.status}: ${res.statusText} — ${text}`);
       }
+
       const data = await res.json();
-      const camelCasedData = camelizeKeys(data);
-      setCaptures(camelCasedData);
+      const camelized = camelizeKeys(data);
+      setCaptures(camelized);
       setError(null);
-      console.log('Fetched captures:', camelCasedData);
     } catch (err) {
-      console.error('Error fetching captures:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      console.error('Fetch failed:', err);
+
       if (retries > 0) {
-        console.log(`Retrying in 1s... (${retries} left)`);
-        setTimeout(() => fetchCaptures(retries - 1), 1000);
+        console.log(`Retrying... (${retries} attempts left)`);
+        setTimeout(() => fetchCaptures(retries - 1), 1500);
       } else {
-        setError(`Failed to load captures: ${errorMessage}. Check backend (port 8000) & Docker network.`);
+        setError(`Failed to load captures: ${msg}`);
       }
     } finally {
       setLoading(false);
     }
   };
 
-
   useEffect(() => {
     fetchCaptures();
   }, []);
 
- 
-  const totalCaptures = captures.length;
-  const uniqueUsers = useMemo(() => new Set(captures.map(c => c.userId)).size, [captures]);
-  const recentCaptures = useMemo(
-    () => captures.filter(c => new Date(c.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length,
-    [captures]
-  );
-  const percentageRecent = totalCaptures > 0 ? (recentCaptures / totalCaptures) : 0;
-
-  console.log(percentageRecent)
-  const currentDate = new Date();
-  let activityLevel = 'LOW';
-  let activityColor = 'green';
-  if (totalCaptures > 0) {
-    const latestCapture = captures.reduce((latest, current) =>
-      new Date(current.createdAt) > new Date(latest.createdAt) ? current : latest
+  // Loading state
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100vh',
+          bgcolor: '#0a1929',
+          color: 'grey.300',
+        }}
+      >
+        <CircularProgress size={60} thickness={5} />
+        <Typography variant="h6" sx={{ mt: 3 }}>
+          Loading captures...
+        </Typography>
+      </Box>
     );
-    const daysSinceLast = (currentDate.getTime() - new Date(latestCapture.createdAt).getTime()) / (1000 * 60 * 60 * 24);
-    if (daysSinceLast <= 1) {
-      activityLevel = 'HIGH';
-      activityColor = 'red';
-    } else if (daysSinceLast <= 7) {
-      activityLevel = 'MEDIUM';
-      activityColor = 'orange';
-    }
   }
 
+  // Error state
   if (error) {
     return (
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Alert severity="error" sx={{ mb: 2 }} action={
-          <Button color="inherit" size="small" onClick={() => { setLoading(true); setError(null); fetchCaptures(); }}>
-            Retry
-          </Button>
-        }>
+      <Container maxWidth="md" sx={{ py: 8, textAlign: 'center' }}>
+        <Alert
+          severity="error"
+          action={
+            <Button
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setLoading(true);
+                setError(null);
+                fetchCaptures();
+              }}
+            >
+              Retry
+            </Button>
+          }
+          sx={{ fontSize: '1rem', py: 2 }}
+        >
           {error}
         </Alert>
       </Container>
     );
   }
 
-  if (loading) {
-    return (
-      <Container maxWidth="lg" sx={{ py: 4, textAlign: 'center' }}>
-        <CircularProgress />
-        <Typography variant="body1" sx={{ mt: 2 }}>Loading captures...</Typography>
-      </Container>
-    );
-  }
-
+  // Main content: Only the table
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar sx={{ bgcolor: 'grey.600', mr: 2 }}>
-            <Typography variant="h4" fontWeight="bold">AS</Typography>
-          </Avatar>
-        </Box>
-        <Box sx={{ textAlign: 'center' }}>
-          <Typography variant="h3" fontWeight="bold" color="grey.200">
-            Juris-Diction(AI)ry
-          </Typography>
-          <Typography variant="body2" color="cyan.400">
-            powered by dwani
-          </Typography>
-        </Box>
-        <Box sx={{ width: 64 }} />
-      </Box>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        bgcolor: '#0a1929',
+        color: 'grey.200',
+        p: 3,
+      }}
+    >
+      <Container maxWidth="xl">
+        <Typography
+          variant="h4"
+          fontWeight="bold"
+          gutterBottom
+          sx={{ mb: 4, color: '#64ffda' }}
+        >
+          User Captures
+        </Typography>
 
-      <Grid container spacing={3}>
-        <Grid item xs={12} lg={8}>
-          <Card sx={{ mb: 3, backgroundColor: '#112240', border: '1px solid #1e2d4a' }}>
-            <CardContent>
-              <Typography variant="h5" fontWeight="600" sx={{ mb: 2, color: 'grey.400' }}>Overview</Typography>
-              <Grid container spacing={2} justifyContent="center">
-                <Grid item xs={4}>
-                  <Box sx={{ textAlign: 'center' }}>
-                    <CircularProgress variant="determinate" value={100} size={120} thickness={4} sx={{ color: '#3b82f6' }} />
-                    <Typography variant="h4" fontWeight="bold" color="blue.400" sx={{ mt: 1 }}>
-                      {totalCaptures}
-                    </Typography>
-                    <Typography variant="body2" color="grey.500" sx={{ mt: 1 }}>TOTAL USER CAPTURES</Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={4}>
-                  <Box sx={{ textAlign: 'center' }}>
-                    <CircularProgress variant="determinate" value={100} size={120} thickness={4} sx={{ color: '#10b981' }} />
-                    <Typography variant="h4" fontWeight="bold" color="green.400" sx={{ mt: 1 }}>
-                      {uniqueUsers}
-                    </Typography>
-                    <Typography variant="body2" color="grey.500" sx={{ mt: 1 }}>UNIQUE USERS</Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={4}>
-                  <Box sx={{ textAlign: 'center' }}>
-                    <CircularProgress variant="determinate" value={activityLevel === 'HIGH' ? 100 : activityLevel === 'MEDIUM' ? 50 : 0} size={120} thickness={4} sx={{ color: activityColor }} />
-                    <Typography variant="h5" fontWeight="bold" sx={{ mt: 1, color: activityColor === 'red' ? 'red.500' : activityColor === 'orange' ? 'orange.500' : 'success.main' }}>
-                      {activityLevel}
-                    </Typography>
-                    <Typography variant="body2" color="grey.500" sx={{ mt: 1 }}>ACTIVITY LEVEL</Typography>
-                  </Box>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-
-          <Accordion sx={{ mb: 3, backgroundColor: '#112240', border: '1px solid #1e2d4a', boxShadow: 'none' }} defaultExpanded={true}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'grey.400' }} />}>
-              <Typography variant="h6" fontWeight="600" sx={{ color: 'grey.400' }}>User Captures</Typography>
-            </AccordionSummary>
-            <AccordionDetails sx={{ p: 0 }}>
-              <UserCaptures captures={captures} />
-            </AccordionDetails>
-          </Accordion>
-          <Divider sx={{ my: 1, borderColor: '#1e2d4a' }} />
-
-          <Accordion sx={{ mb: 3, backgroundColor: '#112240', border: '1px solid #1e2d4a', boxShadow: 'none' }} defaultExpanded={false}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'grey.400' }} />}>
-              <Typography variant="h6" fontWeight="600" sx={{ color: 'grey.400' }}>Country Profiles</Typography>
-            </AccordionSummary>
-            <AccordionDetails sx={{ p: 0 }}>
-            </AccordionDetails>
-          </Accordion>
-
-          <Divider sx={{ my: 1, borderColor: '#1e2d4a' }} />
-
-        </Grid>
-        <div style={{ display: 'none' }}>
-          <Grid item xs={12} lg={4}>
-            <Card sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a', mb: 3 }}>
-              <CardContent>
-                <Typography variant="h5" fontWeight="600" sx={{ mb: 2, color: 'grey.400' }}>Quick Actions</Typography>
-                <Button fullWidth variant="outlined" sx={{ mb: 1, color: '#a8b2d1', borderColor: '#1e2d4a', '&:hover': { bgcolor: '#1e2d4a', color: '#64ffda' } }}>
-                  Run New Scan
-                </Button>
-                <Button fullWidth variant="outlined" sx={{ mb: 1, color: '#a8b2d1', borderColor: '#1e2d4a', '&:hover': { bgcolor: '#1e2d4a', color: '#64ffda' } }}>
-                  Generate Report
-                </Button>
-                <Button fullWidth variant="outlined" sx={{ mb: 1, color: '#a8b2d1', borderColor: '#1e2d4a', '&:hover': { bgcolor: '#1e2d4a', color: '#64ffda' } }}>
-                  Client Database
-                </Button>
-                <Button fullWidth variant="outlined" sx={{ color: '#a8b2d1', borderColor: '#1e2d4a', '&:hover': { bgcolor: '#1e2d4a', color: '#64ffda' } }}>
-                  Settings
-                </Button>
-              </CardContent>
-            </Card>
-            <Card sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a', mb: 3, textAlign: 'center' }}>
-              <CardContent>
-                <Typography variant="body2" color="grey.500">
-                  USER: <Typography component="span" variant="body2" fontWeight="600" color="grey.200">TAX_ADVISOR/USERNAME</Typography>
-                </Typography>
-                <Typography variant="caption" sx={{ mt: 0.5, display: 'block' }}>LAST UPDATE: JUST NOW</Typography>
-              </CardContent>
-            </Card>
-            <Card sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a', opacity: 0.2, minHeight: 200 }} />
-          </Grid>
-        </div>
-      </Grid>
-    </Container>
+        {/* Only the table */}
+        <UserCaptures captures={captures} />
+      </Container>
+    </Box>
   );
 };
 

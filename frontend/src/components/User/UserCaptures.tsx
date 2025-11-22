@@ -1,12 +1,21 @@
 import React from 'react';
 import Box from '@mui/material/Box';
-import { Button, Typography, TextField, CircularProgress, Modal, IconButton } from '@mui/material';
+import {
+  Button,
+  Typography,
+  TextField,
+  CircularProgress,
+  Modal,
+  IconButton,
+  Tooltip,
+} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import {
   DataGrid,
   GridColDef,
   GridToolbarContainer,
   useGridApiContext,
+  GridRenderCellParams,
 } from '@mui/x-data-grid';
 
 const getApiBaseUrl = (): string => {
@@ -26,7 +35,7 @@ interface UserCapture {
   id: number;
   userId: string;
   queryText: string;
-  image: string; // Base64 data URL
+  image: string;
   latitude: number;
   longitude: number;
   aiResponse: string;
@@ -41,125 +50,168 @@ interface UserCapturesProps {
   captures: UserCapture[];
 }
 
+// Safe tool parser
+const parseToolsFromAIResponse = (
+  aiResponse: string | any
+): { names: string; details: Array<{ name: string; purpose: string; priority: string }> } => {
+  if (!aiResponse) return { names: '—', details: [] };
+
+  try {
+    const parsed = typeof aiResponse === 'string' ? JSON.parse(aiResponse) : aiResponse;
+    const tools = parsed?.required_tools;
+
+    if (Array.isArray(tools) && tools.length > 0) {
+      const details = tools.map((t: any) => ({
+        name: t.tool_name || t.name || 'Unknown Tool',
+        purpose: t.purpose || 'No purpose',
+        priority: t.priority || 'normal',
+      }));
+      const names = details.map(d => d.name).join(', ');
+      return { names, details };
+    }
+    return { names: 'None', details: [] };
+  } catch (err) {
+    console.warn('Parse error:', err);
+    return { names: 'Error', details: [] };
+  }
+};
+
+// Only 4 columns: ID, AI Response, Required Tools, Image
 const columns: GridColDef<UserCapture>[] = [
-  { field: 'id', headerName: 'ID', flex: 0.5, minWidth: 80 },
-  { field: 'userId', headerName: 'User ID', flex: 1, minWidth: 150 },
   {
-    field: 'queryText',
-    headerName: 'Query Text',
-    flex: 2,
-    minWidth: 250,
-    editable: false,
-  },
-  {
-    field: 'latitude',
-    headerName: 'Latitude',
-    flex: 0.8,
-    minWidth: 100,
-    editable: false,
-  },
-  {
-    field: 'longitude',
-    headerName: 'Longitude',
-    flex: 0.8,
-    minWidth: 100,
-    editable: false,
+    field: 'id',
+    headerName: 'ID',
+    width: 90,
+    align: 'center',
+    headerAlign: 'center',
   },
   {
     field: 'aiResponse',
     headerName: 'AI Response',
     flex: 2,
-    minWidth: 250,
-    editable: false,
+    minWidth: 300,
   },
   {
-    field: 'createdAt',
-    headerName: 'Created At',
-    flex: 1,
-    minWidth: 150,
-    editable: false,
+    field: 'tools',
+    headerName: 'Required Tools',
+    flex: 1.8,
+    minWidth: 240,
+    sortable: true,
+    valueGetter: (params: any) => {
+      if (!params?.row?.aiResponse) return '—';
+      return parseToolsFromAIResponse(params.row.aiResponse).names;
+    },
+    renderCell: (params: GridRenderCellParams<any, UserCapture>) => {
+      if (!params.row) return <Typography color="text.secondary">—</Typography>;
+
+      const { names, details } = parseToolsFromAIResponse(params.row.aiResponse);
+
+      if (names === 'None')
+        return <Typography color="text.secondary" fontStyle="italic">None</Typography>;
+      if (names === 'Error')
+        return <Typography color="error" fontSize="0.875rem">Parse Error</Typography>;
+      if (names === '—')
+        return <Typography color="text.secondary">—</Typography>;
+
+      const tooltip = details.length > 0 && (
+        <Box sx={{ p: 1.5, maxWidth: 400 }}>
+          {details.map((tool, i) => (
+            <Box key={i} sx={{ mb: 2 }}>
+              <Typography fontWeight="bold" fontSize="0.95em">
+                {tool.name}
+              </Typography>
+              <Typography fontSize="0.85em" color="text.secondary">
+                {tool.purpose}
+              </Typography>
+              <Typography fontSize="0.8em" color="text.secondary" fontStyle="italic">
+                Priority: {tool.priority}
+              </Typography>
+            </Box>
+          ))}
+        </Box>
+      );
+
+      return (
+        <Tooltip title={tooltip || ''} arrow placement="top">
+          <Typography
+            sx={{
+              fontWeight: 500,
+              cursor: details.length > 0 ? 'help' : 'default',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {names}
+          </Typography>
+        </Tooltip>
+      );
+    },
   },
   {
     field: 'image',
     headerName: 'Image',
-    flex: 0.5,
-    minWidth: 100,
+    width: 110,
+    align: 'center',
     sortable: false,
-    renderCell: (params) => (
-      <ViewImageButton imageUrl={params.value as string} />
-    ),
+    renderCell: (params) => <ViewImageButton imageUrl={params.value as string} />,
   },
 ];
 
-interface ViewImageButtonProps {
-  imageUrl: string;
-}
-
-const ViewImageButton: React.FC<ViewImageButtonProps> = ({ imageUrl }) => {
+// Image Modal Component
+const ViewImageButton: React.FC<{ imageUrl: string }> = ({ imageUrl }) => {
   const [open, setOpen] = React.useState(false);
-
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
 
   return (
     <>
       <Button
         variant="outlined"
         size="small"
-        onClick={handleOpen}
+        onClick={() => setOpen(true)}
         disabled={!imageUrl}
+        sx={{ minWidth: 70 }}
       >
         View
       </Button>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="image-modal-title"
-        aria-describedby="image-modal-description"
-      >
+
+      <Modal open={open} onClose={() => setOpen(false)}>
         <Box
           sx={{
             position: 'absolute',
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: '80%',
-            height: '80%',
+            width: { xs: '95%', sm: '80%' },
+            maxHeight: '90vh',
             bgcolor: 'background.paper',
             boxShadow: 24,
             p: 4,
             borderRadius: 2,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
+            outline: 'none',
           }}
         >
           <IconButton
-            aria-label="close"
-            onClick={handleClose}
-            sx={{
-              position: 'absolute',
-              right: 8,
-              top: 8,
-              color: (theme) => theme.palette.grey[500],
-            }}
+            onClick={() => setOpen(false)}
+            sx={{ position: 'absolute', right: 8, top: 8 }}
           >
             <CloseIcon />
           </IconButton>
-          <Typography id="image-modal-title" variant="h6" component="h2" sx={{ mb: 2 }}>
+          <Typography variant="h6" gutterBottom textAlign="center">
             Image Preview
           </Typography>
           {imageUrl && (
-            <img
-              src={imageUrl}
-              alt="User Capture"
-              style={{
-                maxWidth: '100%',
-                maxHeight: '100%',
-                objectFit: 'contain',
-                borderRadius: 1,
-              }}
-            />
+            <Box sx={{ mt: 2, textAlign: 'center' }}>
+              <img
+                src={imageUrl}
+                alt="Capture"
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '70vh',
+                  objectFit: 'contain',
+                  borderRadius: 8,
+                }}
+              />
+            </Box>
           )}
         </Box>
       </Modal>
@@ -167,15 +219,12 @@ const ViewImageButton: React.FC<ViewImageButtonProps> = ({ imageUrl }) => {
   );
 };
 
+// CSV Export Button
 function CustomExportButton() {
   const apiRef = useGridApiContext();
-
   const handleExport = () => {
-    apiRef.current.exportDataAsCsv({
-      fileName: 'user-captures',
-    });
+    apiRef.current.exportDataAsCsv({ fileName: 'user-captures' });
   };
-
   return (
     <Button onClick={handleExport} variant="outlined" size="small">
       Download CSV
@@ -191,6 +240,7 @@ function CustomToolbar() {
   );
 }
 
+// Main Component
 const UserCaptures: React.FC<UserCapturesProps> = ({ captures }) => {
   const originalData = captures;
   const [filteredData, setFilteredData] = React.useState<UserCapture[]>([]);
@@ -200,15 +250,13 @@ const UserCaptures: React.FC<UserCapturesProps> = ({ captures }) => {
   const [naturalResponse, setNaturalResponse] = React.useState('');
 
   const camelizeKeys = (obj: any): any => {
-    const camelize = (str: string): string => str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
-    
-    if (Array.isArray(obj)) {
-      return obj.map(camelizeKeys);
-    } else if (obj !== null && typeof obj === 'object') {
-      return Object.keys(obj).reduce((result: Record<string, any>, key: string) => {
-        result[camelize(key)] = camelizeKeys(obj[key]);
-        return result;
-      }, {} as Record<string, any>);
+    const camelize = (str: string) => str.replace(/_([a-z])/g, (_, l) => l.toUpperCase());
+    if (Array.isArray(obj)) return obj.map(camelizeKeys);
+    if (obj && typeof obj === 'object') {
+      return Object.keys(obj).reduce((acc, key) => {
+        acc[camelize(key)] = camelizeKeys(obj[key]);
+        return acc;
+      }, {} as any);
     }
     return obj;
   };
@@ -220,26 +268,17 @@ const UserCaptures: React.FC<UserCapturesProps> = ({ captures }) => {
     setNaturalResponse('');
     setFilteredData([]);
     setSearchResults([]);
+
     try {
-      const url = `${API_URL}/v1/user-captures/natural-query`;
-      console.log('Querying natural language search:', url, searchQuery);
-      const response = await fetch(url, {
+      const res = await fetch(`${API_URL}/v1/user-captures/natural-query`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ user_query: searchQuery, table_name: "user_captures" }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_query: searchQuery, table_name: 'user_captures' }),
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`Query HTTP ${response.status}: ${response.statusText} - Body: ${errorText}`);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      if (!res.ok) throw new Error('Query failed');
 
-      const data = await response.json();
-      console.log('Query response:', data);
-
+      const data = await res.json();
       setNaturalResponse(data.natural_response || '');
 
       if (data.results && Array.isArray(data.results)) {
@@ -249,12 +288,9 @@ const UserCaptures: React.FC<UserCapturesProps> = ({ captures }) => {
         } else {
           setSearchResults(camelized as SearchResult[]);
         }
-      } else {
-        setFilteredData(originalData);
       }
-    } catch (error) {
-      console.error('Error querying user captures:', error);
-      setFilteredData(originalData);
+    } catch (err) {
+      console.error(err);
     } finally {
       setSearchLoading(false);
     }
@@ -272,86 +308,41 @@ const UserCaptures: React.FC<UserCapturesProps> = ({ captures }) => {
   const showGrid = !hasSearchResults && (displayData.length > 0 || searchLoading);
 
   return (
-    <Box sx={{ height: '100%', width: '100%' }}>
-      <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
+    <Box sx={{ height: '100%', width: '100%', p: 3 }}>
+      <Typography variant="h5" gutterBottom>
         User Captures
       </Typography>
 
-      <Box sx={{ display: 'flex', gap: 1, mb: 2, alignItems: 'end', flexWrap: 'wrap' }}>
+      <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap', alignItems: 'end' }}>
         <TextField
           fullWidth
-          variant="outlined"
-          placeholder="Ask a question about user captures, e.g., Show me all captures from a specific location"
+          label="Natural Language Search"
+          placeholder="e.g., Show captures that need a trimmer"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter') {
-              handleSearch();
-            }
-          }}
+          onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
           disabled={searchLoading}
-          sx={{ 
-            '& .MuiOutlinedInput-root': { backgroundColor: '#1e2d4a' },
-            flex: 1,
-            minWidth: 300,
-          }}
+          sx={{ flex: 1, minWidth: 300 }}
         />
         <Button
           variant="contained"
           onClick={handleSearch}
           disabled={searchLoading || !searchQuery.trim()}
-          sx={{ minWidth: 100 }}
         >
-          {searchLoading ? <CircularProgress size={20} color="inherit" /> : 'Query'}
+          {searchLoading ? <CircularProgress size={20} /> : 'Search'}
         </Button>
         {(filteredData.length > 0 || hasSearchResults) && (
-          <Button
-            variant="outlined"
-            onClick={handleClear}
-            disabled={searchLoading}
-            sx={{ minWidth: 80, color: '#a8b2d1', borderColor: '#1e2d4a' }}
-          >
+          <Button variant="outlined" onClick={handleClear} disabled={searchLoading}>
             Clear
           </Button>
         )}
       </Box>
 
       {naturalResponse && (
-        <Box
-          sx={{
-            mb: 2,
-            p: 2,
-            backgroundColor: '#1e2d4a',
-            border: '1px solid #2a3b5a',
-            borderRadius: 1,
-          }}
-        >
-          <Typography sx={{ whiteSpace: 'pre-line', color: 'grey.300', fontSize: '0.875rem' }}>
+        <Box sx={{ mb: 3, p: 3, bgcolor: '#1e2d4a', borderRadius: 2 }}>
+          <Typography color="grey.300" sx={{ whiteSpace: 'pre-line' }}>
             {naturalResponse}
           </Typography>
-        </Box>
-      )}
-
-      {hasSearchResults && (
-        <Box
-          sx={{
-            mb: 2,
-            p: 2,
-            backgroundColor: '#1e2d4a',
-            border: '1px solid #2a3b5a',
-            borderRadius: 1,
-            maxHeight: 400,
-            overflowY: 'auto',
-          }}
-        >
-          <Typography variant="subtitle2" sx={{ mb: 1, color: 'grey.400' }}>
-            Search Results:
-          </Typography>
-          {searchResults.map((item, index) => (
-            <Typography key={index} variant="body2" sx={{ color: 'grey.300', mb: 0.5 }}>
-              {item.queryText}
-            </Typography>
-          ))}
         </Box>
       )}
 
@@ -360,47 +351,19 @@ const UserCaptures: React.FC<UserCapturesProps> = ({ captures }) => {
           rows={displayData}
           columns={columns}
           getRowId={(row) => row.id}
-          slots={{
-            toolbar: CustomToolbar,
-          }}
+          slots={{ toolbar: CustomToolbar }}
           loading={searchLoading}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 10,
-                page: 0,
-              },
-            },
-          }}
-          pageSizeOptions={[5, 10, 25]}
+          initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
+          pageSizeOptions={[10, 25, 50]}
           checkboxSelection
-          disableRowSelectionOnClick
           sx={{
-            height: 500,
-            '& .MuiDataGrid-cell': {
-              fontSize: '0.875rem',
-            },
-            backgroundColor: '#112240',
+            bgcolor: '#112240',
             border: '1px solid #1e2d4a',
             color: 'grey.200',
-            '& .MuiDataGrid-row:hover': {
-              backgroundColor: '#1e2d4a',
-            },
-            '& .MuiDataGrid-columnHeaders': {
-              backgroundColor: '#1e2d4a',
-              color: 'grey.400',
-            },
-            '& .MuiDataGrid-virtualScroller': {
-              overflowX: 'auto',
-            },
+            '& .MuiDataGrid-columnHeaders': { bgcolor: '#1e2d4a', color: 'grey.400' },
+            '& .MuiDataGrid-row:hover': { bgcolor: '#1e2d4a' },
           }}
         />
-      )}
-
-      {!showGrid && !hasSearchResults && !searchLoading && displayData.length === 0 && (
-        <Box sx={{ textAlign: 'center', py: 4, color: 'grey.500' }}>
-          <Typography>No data available.</Typography>
-        </Box>
       )}
     </Box>
   );
