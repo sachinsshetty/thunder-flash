@@ -4,7 +4,7 @@ samples
 venv
 *.db
 *.nemo
-*.json
+
 .github
 .devcontainer
 docs 
