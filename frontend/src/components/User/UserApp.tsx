@@ -127,13 +127,11 @@ const UserApp: React.FC = () => {
     <Box sx={{ minHeight: '100vh', bgcolor: '#0a1929', color: 'grey.200', p: { xs: 2, md: 4 } }}>
       <Container maxWidth="xl">
 
-        {/* Your Captures Section */}
         <Typography variant="h4" fontWeight="bold" sx={{ mb: 4, color: '#64ffda' }}>
           Your Captures
         </Typography>
         <UserCaptures captures={captures} />
 
-        {/* Main Smart Lawn Advisor Section */}
         <Box sx={{ mt: 12 }}>
           <Typography variant="h3" fontWeight="bold" sx={{ mb: 6, color: '#64ffda', textAlign: 'center' }}>
             AL-KO Smart Lawn Advisor <BluetoothIcon fontSize="large" sx={{ ml: 2, verticalAlign: 'middle', color: '#00bfa5' }} />
@@ -141,7 +139,7 @@ const UserApp: React.FC = () => {
 
           <Grid container spacing={4} alignItems="start">
 
-            {/* LEFT COLUMN: Upload + AI Result + Before/After + Resource Snapshot */}
+            {/* LEFT COLUMN */}
             <Grid item xs={12} md={6}>
 
               {/* Upload Zone */}
@@ -177,9 +175,9 @@ const UserApp: React.FC = () => {
 
               {analysisError && <Alert severity="error" sx={{ mb: 3 }}>{analysisError}</Alert>}
 
-              {/* AI Assessment Card */}
               {analysis && uploadedFile && (
                 <>
+                  {/* AI Assessment Card */}
                   <Card sx={{ bgcolor: '#112240', color: 'white', borderRadius: 4, overflow: 'hidden', mb: 4 }}>
                     <CardMedia
                       component="img"
@@ -213,10 +211,12 @@ const UserApp: React.FC = () => {
                             <ListItemText
                               primary={<strong>{action.title}</strong>}
                               secondary={
-                                <>
-                                  {action.why}
-                                  <Chip label={`Step ${action.step_number}`} size="small" sx={{ ml: 1 }} />
-                                </>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                                  <Typography variant="body2" component="span" color="grey.300">
+                                    {action.why}
+                                  </Typography>
+                                  <Chip label={`Step ${action.step_number}`} size="small" sx={{ alignSelf: 'flex-start', mt: 0.5 }} />
+                                </Box>
                               }
                             />
                           </ListItem>
@@ -229,7 +229,7 @@ const UserApp: React.FC = () => {
                     </CardContent>
                   </Card>
 
-                  {/* Before → After Transformation Widget */}
+                  {/* Before → After Widget */}
                   <Card sx={{ bgcolor: '#112240', color: 'white', p: 3, borderRadius: 4, mb: 4 }}>
                     <Typography variant="h6" color="#64ffda" gutterBottom>
                       30-Day Transformation Forecast
@@ -264,13 +264,13 @@ const UserApp: React.FC = () => {
                     </Typography>
                   </Card>
 
-                  {/* NEW: Smart Mower Energy & Resource Snapshot */}
+                  {/* Smart Mower Resource Snapshot */}
                   <MowerResourceSnapshot mowerPlan={analysis.mower_plan} />
                 </>
               )}
             </Grid>
 
-            {/* RIGHT COLUMN: Live AL-KO Dashboard */}
+            {/* RIGHT COLUMN: Live Dashboard */}
             <Grid item xs={12} md={6}>
               <AlkoLiveDashboard analysis={analysis} />
             </Grid>
