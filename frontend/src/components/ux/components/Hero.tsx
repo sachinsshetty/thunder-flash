@@ -1,4 +1,4 @@
-// src/components/Hero.jsx – FULLY WORKING + NEW LAWN CARE GUIDE ADDED
+// src/components/Hero.jsx – DEMOS AT THE TOP + EVERYTHING ELSE BELOW
 import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -33,10 +33,7 @@ const FeatureCard = styled(Box)(({ theme }) => ({
   boxShadow: theme.shadows[2],
   textAlign: 'center',
   transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
-  '&:hover': {
-    transform: 'scale(1.05)',
-    boxShadow: theme.shadows[4],
-  },
+  '&:hover': { transform: 'scale(1.05)', boxShadow: theme.shadows[4] },
 }));
 
 const ProblemSolutionCard = styled(Box)(({ theme }) => ({
@@ -45,10 +42,7 @@ const ProblemSolutionCard = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
   boxShadow: theme.shadows[3],
   transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
-  '&:hover': {
-    transform: 'translateY(-8px)',
-    boxShadow: theme.shadows[6],
-  },
+  '&:hover': { transform: 'translateY(-8px)', boxShadow: theme.shadows[6] },
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
@@ -56,7 +50,6 @@ const ProblemSolutionCard = styled(Box)(({ theme }) => ({
   textAlign: 'center',
 }));
 
-// === Upload & Result Styling ===
 const UploadZone = styled(Box)(({ theme }) => ({
   border: `3px dashed ${theme.palette.success.main}`,
   borderRadius: 20,
@@ -65,9 +58,7 @@ const UploadZone = styled(Box)(({ theme }) => ({
   cursor: 'pointer',
   backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.2)' : 'rgba(76, 175, 80, 0.06)',
   transition: 'all 0.3s',
-  '&:hover': {
-    backgroundColor: theme.palette.success.main + '20',
-  },
+  '&:hover': { backgroundColor: theme.palette.success.main + '20' },
 }));
 
 const ResultCard = styled(Box)(({ theme }) => ({
@@ -82,12 +73,10 @@ const ResultCard = styled(Box)(({ theme }) => ({
   mx: 'auto',
 }));
 
-// === NEW: Lawn Care Guide Styling ===
+// === Lawn Care Styling ===
 const LawnUploadZone = styled(UploadZone)(({ theme }) => ({
   borderColor: theme.palette.info.main,
-  '&:hover': {
-    backgroundColor: theme.palette.info.main + '20',
-  },
+  '&:hover': { backgroundColor: theme.palette.info.main + '20' },
 }));
 
 const LawnResultCard = styled(ResultCard)(({ theme }) => ({
@@ -136,23 +125,8 @@ Output Format: STRICT JSON ONLY – no extra text, no markdown, no code blocks.
 JSON Schema:
 {
   "overall_condition": "excellent | good | fair | poor | neglected | not_applicable",
-  "maintenance_issues": [
-    {
-      "issue": "string",
-      "location_description": "string",
-      "severity": "low | medium | high | critical",
-      "recommended_action": "string"
-    }
-  ],
-  "required_tools": [
-    {
-      "tool_name": "string",
-      "purpose": "string",
-      "priority": "
-
-immediate | soon | optional"
-    }
-  ],
+  "maintenance_issues": [ { "issue": "string", "location_description": "string", "severity": "low | medium | high | critical", "recommended_action": "string" } ],
+  "required_tools": [ { "tool_name": "string", "purpose": "string", "priority": "immediate | soon | optional" } ],
   "general_advice": "string (max 120 characters)",
   "confidence": 0.0
 }`;
@@ -160,38 +134,25 @@ immediate | soon | optional"
 export default function Hero() {
   const [uploading, setUploading] = useState(false);
   const [result, setResult] = useState(null);
-  const [error, setError] = useState('');
-
-  // NEW: States for Lawn Care Guide
   const [uploadingLawn, setUploadingLawn] = useState(false);
   const [resultLawn, setResultLawn] = useState(null);
+  const [error, setError] = useState('');
 
   const handleUpload = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
-    setUploading(true);
-    setError('');
-    setResult(null);
-
+    setUploading(true); setError(''); setResult(null);
     const formData = new FormData();
     formData.append('file', file);
     formData.append('text', 'Analyze this garden or park photo');
     formData.append('system_prompt', SYSTEM_PROMPT);
-    formData.append('lat', '52.52');
-    formData.append('lon', '13.405');
+    formData.append('lat', '52.52'); formData.append('lon', '13.405');
 
     try {
-      const response = await fetch('https://xr.dwani.ai/upload_image_query', {
-        method: 'POST',
-        body: formData,
-      });
-
+      const response = await fetch('https://xr.dwani.ai/upload_image_query', { method: 'POST', body: formData });
       if (!response.ok) throw new Error('Upload failed');
-
       const data = await response.json();
-      const parsed = JSON.parse(data.response);
-      setResult(parsed);
+      setResult(JSON.parse(data.response));
     } catch (err) {
       setError('Failed to analyze image. Please try again or use the full app.');
       console.error(err);
@@ -200,26 +161,16 @@ export default function Hero() {
     }
   };
 
-  // NEW: Lawn Care Guide Handler
   const handleLawnAnalysis = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
-    setUploadingLawn(true);
-    setError('');
-    setResultLawn(null);
-
+    setUploadingLawn(true); setError(''); setResultLawn(null);
     const formData = new FormData();
     formData.append('file', file);
 
     try {
-      const response = await fetch('https://xr.dwani.ai/analyze-lawn', {
-        method: 'POST',
-        body: formData,
-      });
-
+      const response = await fetch('https://xr.dwani.ai/analyze-lawn', { method: 'POST', body: formData });
       if (!response.ok) throw new Error('Lawn analysis failed');
-
       const data = await response.json();
       setResultLawn(data);
     } catch (err) {
@@ -251,29 +202,127 @@ export default function Hero() {
           py: { xs: 8, sm: 12 },
         })}
       >
-        <Container maxWidth="lg" sx={{ pt: { xs: 10, sm: 16 }, pb: { xs: 6, sm: 10 } }}>
-          <Stack spacing={3} sx={{ alignItems: 'center', width: { xs: '100%', sm: '80%', md: '60%' } }}>
+        <Container maxWidth="lg" sx={{ pt: { xs: 6, sm: 10 }, pb: { xs: 8, sm: 12 } }}>
 
-            {/* Original Header */}
-            <Typography variant="h1" sx={{ fontSize: 'clamp(2.5rem, 7vw, 3.75rem)', fontWeight: 'bold', color: 'primary.main', textAlign: 'center' }}>
+          {/* ========================== DEMOS AT THE TOP ========================== */}
+          <Stack spacing={8} alignItems="center">
+
+            <Typography variant="h1" sx={{ fontSize: 'clamp(2.8rem, 8vw, 4.5rem)', fontWeight: 'bold', color: 'primary.main', textAlign: 'center' }}>
               GardenWatch AI
             </Typography>
-            <Typography variant="h6" sx={{ textAlign: 'center', color: 'text.secondary', fontWeight: 'medium' }}>
-              Your AI Assistant for Garden & Park Maintenance
-            </Typography>
-            <Divider sx={{ width: '60%', mx: 'auto', my: 2 }} />
-            <Typography variant="body1" sx={{ textAlign: 'center', color: 'text.secondary' }}>
-              Upload a photo → Get instant analysis of weeds, dead plants, litter, and the exact tools needed.
+
+            <Typography variant="h5" sx={{ textAlign: 'center', color: 'text.secondary', maxWidth: 800 }}>
+              Try our AI instantly — upload a photo and see results in seconds
             </Typography>
 
-            <Button variant="contained" color="success" href="https://watch.dwani.ai/dashboard" target="_blank" size="large" sx={{ mt: 2, px: 5, py: 1.5, borderRadius: 2 }}>
-              Open Full App
+            {/* 1. Garden/Park Analysis */}
+            <Stack spacing={4} sx={{ width: '100%', maxWidth: 960 }}>
+              <Typography variant="h4" sx={{ textAlign: 'center', fontWeight: 'bold' }}>
+                Instant Garden & Park Analysis
+              </Typography>
+
+              <UploadZone component="label">
+                <input type="file" accept="image/*" hidden onChange={handleUpload} />
+                {uploading ? (
+                  <CircularProgress size={80} thickness={5} />
+                ) : (
+                  <>
+                    <CloudUploadOutlined sx={{ fontSize: 90, color: 'success.main', mb: 2 }} />
+                    <Typography variant="h5" fontWeight="bold">Drop Garden Photo Here</Typography>
+                    <Typography variant="body1" color="text.secondary">Weeds • Dead plants • Litter • AL-KO tools needed</Typography>
+                  </>
+                )}
+              </UploadZone>
+
+              {result && (
+                <ResultCard>
+                  <Typography variant="h5" gutterBottom fontWeight="bold" color="success.dark">AI Analysis Complete</Typography>
+                  <Chip label={`Condition: ${result.overall_condition.replace('_', ' ')}`}
+                    color={['excellent', 'good'].includes(result.overall_condition) ? 'success' : 'error'}
+                    size="large" sx={{ mb: 3, height: 48, fontSize: '1.2rem' }} />
+                  {result.maintenance_issues?.length > 0 && (
+                    <Stack spacing={1} sx={{ mb: 3 }}>
+                      {result.maintenance_issues.map((issue, i) => (
+                        <Typography key={i}>• <strong>{issue.issue}</strong> ({issue.severity}) — {issue.location_description}</Typography>
+                      ))}
+                    </Stack>
+                  )}
+                  <Stack direction="row" flexWrap="wrap" gap={2} justifyContent="center" sx={{ my: 3 }}>
+                    {result.required_tools?.map((tool, i) => (
+                      <Chip key={i} icon={tool.priority === 'immediate' ? <WarningOutlined /> : <WarningAmberOutlined />}
+                        label={`${tool.tool_name} – ${tool.priority}`}
+                        color={tool.priority === 'immediate' ? 'error' : tool.priority === 'soon' ? 'warning' : 'default'}
+                        variant="filled" />
+                    ))}
+                  </Stack>
+                  <Typography variant="body1" fontStyle="italic" color="success.dark">"{result.general_advice}"</Typography>
+                </ResultCard>
+              )}
+            </Stack>
+
+            {/* 2. Lawn Care Guide */}
+            <Stack spacing={4} sx={{ width: '100%', maxWidth: 960 }}>
+              <Typography variant="h4" sx={{ textAlign: 'center', fontWeight: 'bold' }}>
+                Or Get a Full Lawn Care Plan
+              </Typography>
+
+              <LawnUploadZone component="label">
+                <input type="file" accept="image/*" hidden onChange={handleLawnAnalysis} />
+                {uploadingLawn ? (
+                  <CircularProgress size={80} thickness={5} color="info" />
+                ) : (
+                  <>
+                    <CameraAltOutlined sx={{ fontSize: 90, color: 'info.main', mb: 2 }} />
+                    <Typography variant="h5" fontWeight="bold">Drop Lawn Photo Here</Typography>
+                    <Typography variant="body1" color="text.secondary">Fertilizing • Aeration • Overseeding • Mowing schedule</Typography>
+                  </>
+                )}
+              </LawnUploadZone>
+
+              {resultLawn && (
+                <LawnResultCard>
+                  <Typography variant="h5" gutterBottom fontWeight="bold" color="info.dark">Your Personalized Lawn Care Plan</Typography>
+                  <Typography variant="body1" paragraph color="text.secondary">{resultLawn.overall_assessment}</Typography>
+                  <Typography variant="h6" sx={{ mt: 4, mb: 3, fontWeight: 'bold' }}>Recommended Actions</Typography>
+                  <Stack spacing={3}>
+                    {resultLawn.recommended_actions.map((action) => (
+                      <Box key={action.step_number} sx={{ borderLeft: 6, borderColor: 'info.main', bgcolor: 'background.paper', p: 3, borderRadius: 2, boxShadow: 1 }}>
+                        <Typography variant="h6" color="primary" gutterBottom>{action.step_number}. {action.title}</Typography>
+                        <Typography variant="body2" paragraph><strong>Why:</strong> {action.why}</Typography>
+                        <Typography variant="body2" paragraph><strong>How:</strong> {action.how_to_do_it}</Typography>
+                        <Stack direction="row" flexWrap="wrap" gap={1} sx={{ mt: 2 }}>
+                          <strong>Tools:</strong>
+                          {action.tools_and_materials.map((item) => (
+                            <Chip key={item} label={item} size="small" color="info" variant="outlined" />
+                          ))}
+                        </Stack>
+                        {action.best_timing && <Typography variant="body2" sx={{ mt: 1, color: 'success.dark' }}>Best timing: {action.best_timing}</Typography>}
+                        {action.notes && <Typography variant="body2" sx={{ mt: 1, fontStyle: 'italic', color: 'text.secondary' }}>Note: {action.notes}</Typography>}
+                      </Box>
+                    ))}
+                  </Stack>
+                  <Box sx={{ mt: 5, p: 3, bgcolor: 'info.main', color: 'white', borderRadius: 2 }}>
+                    <Typography variant="subtitle1" fontWeight="bold">Ongoing Maintenance</Typography>
+                    <Typography variant="body2">{resultLawn.ongoing_maintenance}</Typography>
+                  </Box>
+                </LawnResultCard>
+              )}
+            </Stack>
+
+            {error && <Alert severity="error" sx={{ width: '100%', maxWidth: 960 }}>{error}</Alert>}
+
+            <Button variant="contained" color="success" href="https://garden.dwani.ai/dashboard" target="_blank" size="large" sx={{ mt: 4, px: 6, py: 2, fontSize: '1.2rem' }}>
+              Open Dashboard
             </Button>
 
-            <Divider sx={{ width: '60%', mx: 'auto', my: 2 }} />
+            <Divider sx={{ width: '60%', my: 8 }} />
+          </Stack>
+
+          {/* ========================== ALL ORIGINAL CONTENT BELOW ========================== */}
+          <Stack spacing={10} alignItems="center">
 
             {/* Problems */}
-            <Stack spacing={4} sx={{ width: '100%', mt: 8 }}>
+            <Stack spacing={4} sx={{ width: '100%' }}>
               <Typography variant="h4" sx={{ textAlign: 'center', fontWeight: 'bold' }}>Common Garden & Park Maintenance Challenges</Typography>
               <Grid container spacing={3}>
                 {problems.map((p, i) => (
@@ -289,7 +338,7 @@ export default function Hero() {
             </Stack>
 
             {/* Solutions */}
-            <Stack spacing={4} sx={{ width: '100%', mt: 6 }}>
+            <Stack spacing={4} sx={{ width: '100%' }}>
               <Typography variant="h4" sx={{ textAlign: 'center', fontWeight: 'bold' }}>GardenWatch AI Makes It Simple</Typography>
               <Grid container spacing={3}>
                 {solutions.map((s, i) => (
@@ -305,7 +354,7 @@ export default function Hero() {
             </Stack>
 
             {/* Features */}
-            <Stack spacing={4} sx={{ width: '100%', mt: 8 }}>
+            <Stack spacing={4} sx={{ width: '100%' }}>
               <Typography variant="h4" sx={{ textAlign: 'center', fontWeight: 'bold' }}>Core Detection & Training Modules</Typography>
               <Grid container spacing={3}>
                 {features.map((f, i) => (
@@ -323,155 +372,8 @@ export default function Hero() {
               </Grid>
             </Stack>
 
-            {/* LIVE UPLOAD & RESULT SECTION */}
-            <Stack spacing={6} sx={{ width: '100%', mt: 10 }}>
-              <Typography variant="h4" sx={{ textAlign: 'center', fontWeight: 'bold' }}>
-                Try GardenWatch AI Right Now
-              </Typography>
-
-              <UploadZone component="label">
-                <input type="file" accept="image/*" hidden onChange={handleUpload} />
-                {uploading ? (
-                  <CircularProgress size={64} thickness={5} />
-                ) : (
-                  <>
-                    <CloudUploadOutlined sx={{ fontSize: 80, color: 'success.main', mb: 2 }} />
-                    <Typography variant="h6" fontWeight="bold">Click or Drop a Garden Photo Here</Typography>
-                    <Typography variant="body2" color="text.secondary">Works instantly on mobile too!</Typography>
-                  </>
-                )}
-              </UploadZone>
-
-              {error && <Alert severity="error">{error}</Alert>}
-
-              {result && (
-                <ResultCard>
-                  <Typography variant="h5" gutterBottom fontWeight="bold" color="success.dark">
-                    AI Analysis Complete
-                  </Typography>
-
-                  <Chip
-                    label={`Condition: ${result.overall_condition.replace('_', ' ')}`}
-                    color={['excellent', 'good'].includes(result.overall_condition) ? 'success' : 'error'}
-                    size="large"
-                    sx={{ mb: 3, height: 44, fontSize: '1.1rem' }}
-                  />
-
-                  {result.maintenance_issues?.length > 0 && (
-                    <Stack spacing={1} sx={{ mb: 3 }}>
-                      {result.maintenance_issues.map((issue, i) => (
-                        <Typography key={i}>
-                          • <strong>{issue.issue}</strong> ({issue.severity}) — {issue.location_description}
-                        </Typography>
-                      ))}
-                    </Stack>
-                  )}
-
-                  <Stack direction="row" flexWrap="wrap" gap={2} justifyContent="center" sx={{ my: 3 }}>
-                    {result.required_tools?.map((tool, i) => (
-                      <Chip
-                        key={i}
-                        icon={tool.priority === 'immediate' ? <WarningOutlined /> : <WarningAmberOutlined />}
-                        label={`${tool.tool_name} – ${tool.priority}`}
-                        color={tool.priority === 'immediate' ? 'error' : tool.priority === 'soon' ? 'warning' : 'default'}
-                        variant="filled"
-                      />
-                    ))}
-                  </Stack>
-
-                  <Typography variant="body1" fontStyle="italic" color="success.dark">
-                    "{result.general_advice}"
-                  </Typography>
-                </ResultCard>
-              )}
-
-              {/* NEW: Detailed Lawn Care Guide */}
-              <Stack spacing={4} sx={{ mt: 10 }}>
-                <Typography variant="h5" sx={{ textAlign: 'center', fontWeight: 'bold', color: 'info.main' }}>
-                  Or Get a Complete Lawn Care Guide
-                </Typography>
-
-                <LawnUploadZone component="label">
-                  <input type="file" accept="image/*" hidden onChange={handleLawnAnalysis} />
-                  {uploadingLawn ? (
-                    <CircularProgress size={64} thickness={5} color="info" />
-                  ) : (
-                    <>
-                      <CameraAltOutlined sx={{ fontSize: 80, color: 'info.main', mb: 2 }} />
-                      <Typography variant="h6" fontWeight="bold">Upload Lawn Photo</Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Step-by-step fertilizing, aeration, overseeding & mowing plan
-                      </Typography>
-                    </>
-                  )}
-                </LawnUploadZone>
-
-                {resultLawn && (
-                  <LawnResultCard>
-                    <Typography variant="h5" gutterBottom fontWeight="bold" color="info.dark">
-                      Your Personalized Lawn Care Plan
-                    </Typography>
-
-                    <Typography variant="body1" paragraph color="text.secondary">
-                      {resultLawn.overall_assessment}
-                    </Typography>
-
-                    <Typography variant="h6" sx={{ mt: 4, mb: 3, fontWeight: 'bold' }}>
-                      Recommended Actions
-                    </Typography>
-
-                    <Stack spacing={3}>
-                      {resultLawn.recommended_actions.map((action) => (
-                        <Box
-                          key={action.step_number}
-                          sx={{
-                            borderLeft: 6,
-                            borderColor: 'info.main',
-                            bgcolor: 'background.paper',
-                            p: 3,
-                            borderRadius: 2,
-                            boxShadow: 1,
-                          }}
-                        >
-                          <Typography variant="h6" color="primary" gutterBottom>
-                            {action.step_number}. {action.title}
-                          </Typography>
-                          <Typography variant="body2" paragraph><strong>Why:</strong> {action.why}</Typography>
-                          <Typography variant="body2" paragraph><strong>How to do it:</strong> {action.how_to_do_it}</Typography>
-
-                          <Stack direction="row" flexWrap="wrap" gap={1} sx={{ mt: 2 }}>
-                            <strong>Tools & Materials:</strong>
-                            {action.tools_and_materials.map((item) => (
-                              <Chip key={item} label={item} size="small" color="info" variant="outlined" />
-                            ))}
-                          </Stack>
-
-                          {action.best_timing && (
-                            <Typography variant="body2" sx={{ mt: 1, color: 'success.dark' }}>
-                              Best timing: {action.best_timing}
-                            </Typography>
-                          )}
-
-                          {action.notes && (
-                            <Typography variant="body2" sx={{ mt: 1, fontStyle: 'italic', color: 'text.secondary' }}>
-                              Note: {action.notes}
-                            </Typography>
-                          )}
-                        </Box>
-                      ))}
-                    </Stack>
-
-                    <Box sx={{ mt: 5, p: 3, bgcolor: 'info.main', color: 'white', borderRadius: 2 }}>
-                      <Typography variant="subtitle1" fontWeight="bold">Ongoing Maintenance</Typography>
-                      <Typography variant="body2">{resultLawn.ongoing_maintenance}</Typography>
-                    </Box>
-                  </LawnResultCard>
-                )}
-              </Stack>
-            </Stack>
-
-            {/* Original Footer */}
-            <Stack spacing={2} sx={{ width: '100%', mt: 8 }}>
+            {/* Footer */}
+            <Stack spacing={2} sx={{ width: '100%', mt: 10 }}>
               <Divider sx={{ width: '60%', mx: 'auto' }} />
               <Typography variant="h4" sx={{ textAlign: 'center', fontWeight: 'bold' }}>
                 Ready to Keep Gardens Beautiful?
