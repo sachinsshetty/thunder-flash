@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import {
   Container, Box, Typography, CircularProgress, Alert, Button,
-  Paper, Grid, Card, CardContent, CardMedia, CardActions,
+  Paper, Grid, Card, CardContent, CardMedia,
   Chip, Divider, List, ListItem, ListItemText, ListItemIcon
 } from '@mui/material'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
@@ -120,22 +120,24 @@ const UserApp: React.FC = () => {
     <Box sx={{ minHeight: '100vh', bgcolor: '#0a1929', color: 'grey.200', p: { xs: 2, md: 4 } }}>
       <Container maxWidth="xl">
 
-        {/* User Captures */}
+        {/* Your Captures */}
         <Typography variant="h4" fontWeight="bold" sx={{ mb: 4, color: '#64ffda' }}>
           Your Captures
         </Typography>
         <UserCaptures captures={captures} />
 
-        {/* AL-KO Smart Lawn Advisor */}
+        {/* Main Section: AI + Live Dashboard Side-by-Side */}
         <Box sx={{ mt: 12 }}>
           <Typography variant="h3" fontWeight="bold" sx={{ mb: 6, color: '#64ffda', textAlign: 'center' }}>
             AL-KO Smart Lawn Advisor <BluetoothIcon fontSize="large" sx={{ ml: 2, verticalAlign: 'middle', color: '#00bfa5' }} />
           </Typography>
 
-          <Grid container spacing={6} alignItems="start">
+          {/* Upload + AI Result + Live Dashboard */}
+          <Grid container spacing={4} alignItems="start">
 
-            {/* Upload Zone */}
-            <Grid item xs={12} md={5}>
+            {/* LEFT: Upload + AI Result */}
+            <Grid item xs={12} md={6}>
+              {/* Upload Zone */}
               <Paper
                 sx={{
                   p: 6,
@@ -145,6 +147,7 @@ const UserApp: React.FC = () => {
                   borderRadius: 4,
                   cursor: 'pointer',
                   transition: '0.3s',
+                  mb: 4,
                   '&:hover': { bgcolor: '#1a3a6e', transform: 'translateY(-4px)' }
                 }}
                 onClick={() => document.getElementById('lawn-upload')?.click()}
@@ -159,52 +162,51 @@ const UserApp: React.FC = () => {
                   <>
                     <Typography variant="h5" color="#64ffda" gutterBottom>Upload Lawn Photo</Typography>
                     <Typography color="grey.400">
-                      Get instant AI diagnosis + live AL-KO tractor recommendations
+                      Get instant AI diagnosis + live AL-KO recommendations
                     </Typography>
                   </>
                 )}
               </Paper>
-              {analysisError && <Alert severity="error" sx={{ mt: 3 }}>{analysisError}</Alert>}
-            </Grid>
+              {analysisError && <Alert severity="error" sx={{ mb: 3 }}>{analysisError}</Alert>}
 
-            {/* AI Results + Live Dashboard */}
-            <Grid item xs={12} md={7}>
+              {/* AI Analysis Result */}
               {lawnAnalysis && uploadedFile && (
-                <Card sx={{ bgcolor: '#112240', color: 'white', borderRadius: 4, overflow: 'hidden', mb: 6 }}>
+                <Card sx={{ bgcolor: '#112240', color: 'white', borderRadius: 4, overflow: 'hidden' }}>
                   <CardMedia
                     component="img"
-                    height="340"
+                    height="300"
                     image={URL.createObjectURL(uploadedFile)}
                     alt="Your lawn"
                     sx={{ objectFit: 'cover' }}
                   />
-                  <CardContent sx={{ pb: 2 }}>
-                    <Typography variant="h5" gutterBottom color="#64ffda">AI Assessment</Typography>
+                  <CardContent>
+                    <Typography variant="h5" gutterBottom color="#64ffda">
+                      AI Assessment
+                    </Typography>
                     <Typography paragraph sx={{ fontSize: '1.1rem', lineHeight: 1.7 }}>
                       {lawnAnalysis.overall_assessment}
                     </Typography>
 
-                    <Divider sx={{ my: 4, bgcolor: '#334466' }} />
+                    <Divider sx={{ my: 3, bgcolor: '#334466' }} />
 
                     <Typography variant="h6" gutterBottom color="#00bfa5">
-                      <SpeedIcon sx={{ verticalAlign: 'middle', mr: 1 }} /> Recommended Actions
+                      <SpeedIcon sx={{ verticalAlign: 'middle', mr: 1 }} /> Top Recommendations
                     </Typography>
-                    <List>
-                      {lawnAnalysis.recommended_actions.slice(0, 5).map((action: any, i: number) => (
-                        <ListItem key={i}>
-                          <ListItemIcon>
-                            {i === 0 && <CheckCircleIcon color="success" />}
-                            {i === 1 && <ScheduleIcon color="primary" />}
-                            {i === 2 && <BatteryChargingFullIcon color="secondary" />}
-                            {i >= 3 && <BluetoothIcon color="info" />}
+                    <List dense>
+                      {lawnAnalysis.recommended_actions.slice(0, 4).map((action: any, i: number) => (
+                        <ListItem key={i} sx={{ py: 0.5 }}>
+                          <ListItemIcon sx={{ minWidth: 36 }}>
+                            {i === 0 && <CheckCircleIcon fontSize="small" color="success" />}
+                            {i === 1 && <ScheduleIcon fontSize="small" color="primary" />}
+                            {i === 2 && <BatteryChargingFullIcon fontSize="small" color="secondary" />}
+                            {i >= 3 && <BluetoothIcon fontSize="small" color="info" />}
                           </ListItemIcon>
                           <ListItemText
                             primary={<strong>{action.title}</strong>}
                             secondary={
                               <>
                                 {action.why}
-                                <br />
-                                <Chip label={`Step ${action.step_number}`} size="small" sx={{ mt: 1 }} />
+                                <Chip label={`Step ${action.step_number}`} size="small" sx={{ ml: 1 }} />
                               </>
                             }
                           />
@@ -212,13 +214,16 @@ const UserApp: React.FC = () => {
                       ))}
                     </List>
 
-                    <Typography variant="body1" color="grey.400" sx={{ mt: 4, fontStyle: 'italic' }}>
+                    <Typography variant="body2" color="grey.400" sx={{ mt: 3, fontStyle: 'italic' }}>
                       {lawnAnalysis.ongoing_maintenance}
                     </Typography>
                   </CardContent>
                 </Card>
               )}
+            </Grid>
 
+            {/* RIGHT: Live AL-KO Dashboard */}
+            <Grid item xs={12} md={6}>
               <AlkoLiveDashboard />
             </Grid>
           </Grid>
@@ -228,4 +233,4 @@ const UserApp: React.FC = () => {
   )
 }
 
-export default UserApp;
+export default UserApp
