@@ -134,8 +134,7 @@ async def upload_image_query_endpoint(
     description="Two-step vision pipeline using GPT-4o or similar. Returns clean JSON only."
 )
 async def analyze_lawn(
-    file: UploadFile = File(..., description="Photo of your lawn or garden"),
-    model: str = Form("gpt-4o-mini", description="Vision model: gpt-4o, gpt-4o-mini, etc.")
+    file: UploadFile = File(..., description="Photo of your lawn or garden")
 ):
     """
     Two-step process:
@@ -152,6 +151,7 @@ async def analyze_lawn(
     b64_image = base64.b64encode(image_bytes).decode("utf-8")
     data_url = f"data:{file.content_type};base64,{b64_image}"
 
+    model = "gemma3"
     # === STEP 1: Get precise description ===
     desc_messages = [
         {
