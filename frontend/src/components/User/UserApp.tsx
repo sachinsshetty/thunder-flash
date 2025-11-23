@@ -13,6 +13,7 @@ import BluetoothIcon from '@mui/icons-material/Bluetooth'
 import SpeedIcon from '@mui/icons-material/Speed'
 import GrassIcon from '@mui/icons-material/Grass'
 import AlkoLiveDashboard from './AlkoLiveDashboard'
+import MowerResourceSnapshot from './MowerResourceSnapshot'
 import UserCaptures from './UserCaptures'
 
 interface UserCapture {
@@ -126,7 +127,7 @@ const UserApp: React.FC = () => {
     <Box sx={{ minHeight: '100vh', bgcolor: '#0a1929', color: 'grey.200', p: { xs: 2, md: 4 } }}>
       <Container maxWidth="xl">
 
-        {/* Your Captures */}
+        {/* Your Captures Section */}
         <Typography variant="h4" fontWeight="bold" sx={{ mb: 4, color: '#64ffda' }}>
           Your Captures
         </Typography>
@@ -140,8 +141,9 @@ const UserApp: React.FC = () => {
 
           <Grid container spacing={4} alignItems="start">
 
-            {/* LEFT COLUMN: Upload + AI Result + Before/After */}
+            {/* LEFT COLUMN: Upload + AI Result + Before/After + Resource Snapshot */}
             <Grid item xs={12} md={6}>
+
               {/* Upload Zone */}
               <Paper
                 sx={{
@@ -228,7 +230,7 @@ const UserApp: React.FC = () => {
                   </Card>
 
                   {/* Before → After Transformation Widget */}
-                  <Card sx={{ bgcolor: '#112240', color: 'white', p: 3, borderRadius: 4 }}>
+                  <Card sx={{ bgcolor: '#112240', color: 'white', p: 3, borderRadius: 4, mb: 4 }}>
                     <Typography variant="h6" color="#64ffda" gutterBottom>
                       30-Day Transformation Forecast
                     </Typography>
@@ -261,6 +263,9 @@ const UserApp: React.FC = () => {
                       Projected health with recommended care
                     </Typography>
                   </Card>
+
+                  {/* NEW: Smart Mower Energy & Resource Snapshot */}
+                  <MowerResourceSnapshot mowerPlan={analysis.mower_plan} />
                 </>
               )}
             </Grid>
