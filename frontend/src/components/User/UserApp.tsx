@@ -3,13 +3,15 @@ import React, { useState, useEffect } from 'react'
 import {
   Container, Box, Typography, CircularProgress, Alert, Button,
   Paper, Grid, Card, CardContent, CardMedia,
-  Chip, Divider, List, ListItem, ListItemText, ListItemIcon
+  Chip, Divider, List, ListItem, ListItemText, ListItemIcon,
+  LinearProgress
 } from '@mui/material'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import BatteryChargingFullIcon from '@mui/icons-material/BatteryChargingFull'
 import BluetoothIcon from '@mui/icons-material/Bluetooth'
 import SpeedIcon from '@mui/icons-material/Speed'
+import GrassIcon from '@mui/icons-material/Grass'
 import AlkoLiveDashboard from './AlkoLiveDashboard'
 import UserCaptures from './UserCaptures'
 
@@ -50,9 +52,8 @@ const UserApp: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Lawn AI states
   const [uploading, setUploading] = useState(false)
-  const [lawnAnalysis, setLawnAnalysis] = useState<any>(null)
+  const [analysis, setAnalysis] = useState<any>(null)
   const [analysisError, setAnalysisError] = useState<string | null>(null)
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
 
@@ -80,22 +81,27 @@ const UserApp: React.FC = () => {
     setUploadedFile(file)
     setUploading(true)
     setAnalysisError(null)
-    setLawnAnalysis(null)
+    setAnalysis(null)
 
     const formData = new FormData()
     formData.append('file', file)
 
     try {
-      const res = await fetch('https://xr.dwani.ai/analyze-lawn', {
+      const res = await fetch('https://xr.dwani.ai/analyze-lawn-for-widgets', {
         method: 'POST',
-        headers: { accept: 'application/json' },
         body: formData,
       })
-      if (!res.ok) throw new Error(`Analysis failed: ${res.status}`)
+
+      if (!res.ok) {
+        const text = await res.text()
+        throw new Error(`Server error ${res.status}: ${text}`)
+      }
+
       const result = await res.json()
-      setLawnAnalysis(result)
+      setAnalysis(result)
     } catch (err) {
-      setAnalysisError(err instanceof Error ? err.message : 'Analysis failed')
+      console.error('Upload failed:', err)
+      setAnalysisError(err instanceof Error ? err.message : 'Upload failed')
     } finally {
       setUploading(false)
     }
@@ -104,7 +110,7 @@ const UserApp: React.FC = () => {
   if (loading) return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', bgcolor: '#0a1929' }}>
       <CircularProgress size={80} thickness={6} color="primary" />
-      <Typography variant="h6" sx={{ mt: 4, color: 'grey.300' }}>Loading your lawn data...</Typography>
+      <Typography variant="h6" sx={{ mt: 4, color: 'grey.300' }}>Loading your data...</Typography>
     </Box>
   )
 
@@ -126,16 +132,15 @@ const UserApp: React.FC = () => {
         </Typography>
         <UserCaptures captures={captures} />
 
-        {/* Main Section: AI + Live Dashboard Side-by-Side */}
+        {/* Main Smart Lawn Advisor Section */}
         <Box sx={{ mt: 12 }}>
           <Typography variant="h3" fontWeight="bold" sx={{ mb: 6, color: '#64ffda', textAlign: 'center' }}>
             AL-KO Smart Lawn Advisor <BluetoothIcon fontSize="large" sx={{ ml: 2, verticalAlign: 'middle', color: '#00bfa5' }} />
           </Typography>
 
-          {/* Upload + AI Result + Live Dashboard */}
           <Grid container spacing={4} alignItems="start">
 
-            {/* LEFT: Upload + AI Result */}
+            {/* LEFT COLUMN: Upload + AI Result + Before/After */}
             <Grid item xs={12} md={6}>
               {/* Upload Zone */}
               <Paper
@@ -156,75 +161,113 @@ const UserApp: React.FC = () => {
                 {uploading ? (
                   <Box>
                     <CircularProgress size={70} thickness={6} />
-                    <Typography sx={{ mt: 3, fontSize: '1.2rem' }}>AI is analyzing your lawn...</Typography>
+                    <Typography sx={{ mt: 3, fontSize: '1.2rem' }}>AI analyzing your lawn...</Typography>
                   </Box>
                 ) : (
                   <>
                     <Typography variant="h5" color="#64ffda" gutterBottom>Upload Lawn Photo</Typography>
                     <Typography color="grey.400">
-                      Get instant AI diagnosis + live AL-KO recommendations
+                      Get AI diagnosis, 30-day plan + live mower simulation
                     </Typography>
                   </>
                 )}
               </Paper>
+
               {analysisError && <Alert severity="error" sx={{ mb: 3 }}>{analysisError}</Alert>}
 
-              {/* AI Analysis Result */}
-              {lawnAnalysis && uploadedFile && (
-                <Card sx={{ bgcolor: '#112240', color: 'white', borderRadius: 4, overflow: 'hidden' }}>
-                  <CardMedia
-                    component="img"
-                    height="300"
-                    image={URL.createObjectURL(uploadedFile)}
-                    alt="Your lawn"
-                    sx={{ objectFit: 'cover' }}
-                  />
-                  <CardContent>
-                    <Typography variant="h5" gutterBottom color="#64ffda">
-                      AI Assessment
-                    </Typography>
-                    <Typography paragraph sx={{ fontSize: '1.1rem', lineHeight: 1.7 }}>
-                      {lawnAnalysis.overall_assessment}
-                    </Typography>
+              {/* AI Assessment Card */}
+              {analysis && uploadedFile && (
+                <>
+                  <Card sx={{ bgcolor: '#112240', color: 'white', borderRadius: 4, overflow: 'hidden', mb: 4 }}>
+                    <CardMedia
+                      component="img"
+                      height="300"
+                      image={URL.createObjectURL(uploadedFile)}
+                      alt="Your lawn"
+                      sx={{ objectFit: 'cover' }}
+                    />
+                    <CardContent>
+                      <Typography variant="h5" gutterBottom color="#64ffda">
+                        AI Assessment
+                      </Typography>
+                      <Typography paragraph sx={{ fontSize: '1.1rem', lineHeight: 1.7 }}>
+                        {analysis.overall_assessment}
+                      </Typography>
 
-                    <Divider sx={{ my: 3, bgcolor: '#334466' }} />
+                      <Divider sx={{ my: 3, bgcolor: '#334466' }} />
 
-                    <Typography variant="h6" gutterBottom color="#00bfa5">
-                      <SpeedIcon sx={{ verticalAlign: 'middle', mr: 1 }} /> Top Recommendations
-                    </Typography>
-                    <List dense>
-                      {lawnAnalysis.recommended_actions.slice(0, 4).map((action: any, i: number) => (
-                        <ListItem key={i} sx={{ py: 0.5 }}>
-                          <ListItemIcon sx={{ minWidth: 36 }}>
-                            {i === 0 && <CheckCircleIcon fontSize="small" color="success" />}
-                            {i === 1 && <ScheduleIcon fontSize="small" color="primary" />}
-                            {i === 2 && <BatteryChargingFullIcon fontSize="small" color="secondary" />}
-                            {i >= 3 && <BluetoothIcon fontSize="small" color="info" />}
-                          </ListItemIcon>
-                          <ListItemText
-                            primary={<strong>{action.title}</strong>}
-                            secondary={
-                              <>
-                                {action.why}
-                                <Chip label={`Step ${action.step_number}`} size="small" sx={{ ml: 1 }} />
-                              </>
-                            }
-                          />
-                        </ListItem>
-                      ))}
-                    </List>
+                      <Typography variant="h6" gutterBottom color="#00bfa5">
+                        <SpeedIcon sx={{ verticalAlign: 'middle', mr: 1 }} /> Top Recommendations
+                      </Typography>
+                      <List dense>
+                        {analysis.recommended_actions.slice(0, 4).map((action: any, i: number) => (
+                          <ListItem key={i} sx={{ py: 0.5 }}>
+                            <ListItemIcon sx={{ minWidth: 36 }}>
+                              {i === 0 && <CheckCircleIcon fontSize="small" color="success" />}
+                              {i === 1 && <ScheduleIcon fontSize="small" color="primary" />}
+                              {i === 2 && <BatteryChargingFullIcon fontSize="small" color="secondary" />}
+                              {i >= 3 && <BluetoothIcon fontSize="small" color="info" />}
+                            </ListItemIcon>
+                            <ListItemText
+                              primary={<strong>{action.title}</strong>}
+                              secondary={
+                                <>
+                                  {action.why}
+                                  <Chip label={`Step ${action.step_number}`} size="small" sx={{ ml: 1 }} />
+                                </>
+                              }
+                            />
+                          </ListItem>
+                        ))}
+                      </List>
 
-                    <Typography variant="body2" color="grey.400" sx={{ mt: 3, fontStyle: 'italic' }}>
-                      {lawnAnalysis.ongoing_maintenance}
+                      <Typography variant="body2" color="grey.400" sx={{ mt: 3, fontStyle: 'italic' }}>
+                        {analysis.ongoing_maintenance}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+
+                  {/* Before → After Transformation Widget */}
+                  <Card sx={{ bgcolor: '#112240', color: 'white', p: 3, borderRadius: 4 }}>
+                    <Typography variant="h6" color="#64ffda" gutterBottom>
+                      30-Day Transformation Forecast
                     </Typography>
-                  </CardContent>
-                </Card>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                      <Box textAlign="center">
+                        <Typography variant="h3" color="error">
+                          {analysis.before_after_simulation.before.grass_health_score}
+                        </Typography>
+                        <Typography variant="body2" color="grey.400">Before</Typography>
+                      </Box>
+                      <GrassIcon sx={{ fontSize: 70, color: '#64ffda', opacity: 0.7 }} />
+                      <Box textAlign="center">
+                        <Typography variant="h3" color="success">
+                          {analysis.before_after_simulation.after_30_days.grass_health_score}
+                        </Typography>
+                        <Typography variant="body2" color="grey.400">After 30 Days</Typography>
+                      </Box>
+                    </Box>
+                    <LinearProgress
+                      variant="determinate"
+                      value={analysis.before_after_simulation.after_30_days.grass_health_score}
+                      sx={{
+                        height: 14,
+                        borderRadius: 7,
+                        bgcolor: '#334466',
+                        '& .MuiLinearProgress-bar': { bgcolor: '#64ffda' }
+                      }}
+                    />
+                    <Typography variant="caption" sx={{ mt: 1, textAlign: 'center', color: 'grey.400' }}>
+                      Projected health with recommended care
+                    </Typography>
+                  </Card>
+                </>
               )}
             </Grid>
 
-            {/* RIGHT: Live AL-KO Dashboard */}
+            {/* RIGHT COLUMN: Live AL-KO Dashboard */}
             <Grid item xs={12} md={6}>
-              <AlkoLiveDashboard />
+              <AlkoLiveDashboard analysis={analysis} />
             </Grid>
           </Grid>
         </Box>
