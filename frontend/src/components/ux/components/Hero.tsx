@@ -1,4 +1,4 @@
-// src/components/Hero.jsx – FULLY WORKING LIVE UPLOAD + RESULTS
+// src/components/Hero.jsx – FULLY WORKING + NEW LAWN CARE GUIDE ADDED
 import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -82,6 +82,21 @@ const ResultCard = styled(Box)(({ theme }) => ({
   mx: 'auto',
 }));
 
+// === NEW: Lawn Care Guide Styling ===
+const LawnUploadZone = styled(UploadZone)(({ theme }) => ({
+  borderColor: theme.palette.info.main,
+  '&:hover': {
+    backgroundColor: theme.palette.info.main + '20',
+  },
+}));
+
+const LawnResultCard = styled(ResultCard)(({ theme }) => ({
+  borderColor: theme.palette.info.main,
+  background: theme.palette.mode === 'dark'
+    ? 'linear-gradient(135deg, #0a1e2e, #0f2f3f)'
+    : 'linear-gradient(135deg, #e3f2fd, #bbdefb)',
+}));
+
 // === Original Data (100% unchanged) ===
 const problems = [
   { text: 'Hard to spot weeds, dead plants, or pests early', icon: <VisibilityOffOutlined color="error" fontSize="large" />, chipLabel: 'Detection' },
@@ -133,7 +148,9 @@ JSON Schema:
     {
       "tool_name": "string",
       "purpose": "string",
-      "priority": "immediate | soon | optional"
+      "priority": "
+
+immediate | soon | optional"
     }
   ],
   "general_advice": "string (max 120 characters)",
@@ -144,6 +161,10 @@ export default function Hero() {
   const [uploading, setUploading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+
+  // NEW: States for Lawn Care Guide
+  const [uploadingLawn, setUploadingLawn] = useState(false);
+  const [resultLawn, setResultLawn] = useState(null);
 
   const handleUpload = async (event) => {
     const file = event.target.files?.[0];
@@ -169,13 +190,43 @@ export default function Hero() {
       if (!response.ok) throw new Error('Upload failed');
 
       const data = await response.json();
-      const parsed = JSON.parse(data.response); // Important: response is nested
+      const parsed = JSON.parse(data.response);
       setResult(parsed);
     } catch (err) {
       setError('Failed to analyze image. Please try again or use the full app.');
       console.error(err);
     } finally {
       setUploading(false);
+    }
+  };
+
+  // NEW: Lawn Care Guide Handler
+  const handleLawnAnalysis = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploadingLawn(true);
+    setError('');
+    setResultLawn(null);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch('https://xr.dwani.ai/analyze-lawn', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error('Lawn analysis failed');
+
+      const data = await response.json();
+      setResultLawn(data);
+    } catch (err) {
+      setError('Failed to generate lawn care guide. Please try again.');
+      console.error(err);
+    } finally {
+      setUploadingLawn(false);
     }
   };
 
@@ -221,7 +272,6 @@ export default function Hero() {
 
             <Divider sx={{ width: '60%', mx: 'auto', my: 2 }} />
 
-            {/* Original Sections – 100% unchanged */}
             {/* Problems */}
             <Stack spacing={4} sx={{ width: '100%', mt: 8 }}>
               <Typography variant="h4" sx={{ textAlign: 'center', fontWeight: 'bold' }}>Common Garden & Park Maintenance Challenges</Typography>
@@ -334,6 +384,90 @@ export default function Hero() {
                   </Typography>
                 </ResultCard>
               )}
+
+              {/* NEW: Detailed Lawn Care Guide */}
+              <Stack spacing={4} sx={{ mt: 10 }}>
+                <Typography variant="h5" sx={{ textAlign: 'center', fontWeight: 'bold', color: 'info.main' }}>
+                  Or Get a Complete Lawn Care Guide
+                </Typography>
+
+                <LawnUploadZone component="label">
+                  <input type="file" accept="image/*" hidden onChange={handleLawnAnalysis} />
+                  {uploadingLawn ? (
+                    <CircularProgress size={64} thickness={5} color="info" />
+                  ) : (
+                    <>
+                      <CameraAltOutlined sx={{ fontSize: 80, color: 'info.main', mb: 2 }} />
+                      <Typography variant="h6" fontWeight="bold">Upload Lawn Photo</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Step-by-step fertilizing, aeration, overseeding & mowing plan
+                      </Typography>
+                    </>
+                  )}
+                </LawnUploadZone>
+
+                {resultLawn && (
+                  <LawnResultCard>
+                    <Typography variant="h5" gutterBottom fontWeight="bold" color="info.dark">
+                      Your Personalized Lawn Care Plan
+                    </Typography>
+
+                    <Typography variant="body1" paragraph color="text.secondary">
+                      {resultLawn.overall_assessment}
+                    </Typography>
+
+                    <Typography variant="h6" sx={{ mt: 4, mb: 3, fontWeight: 'bold' }}>
+                      Recommended Actions
+                    </Typography>
+
+                    <Stack spacing={3}>
+                      {resultLawn.recommended_actions.map((action) => (
+                        <Box
+                          key={action.step_number}
+                          sx={{
+                            borderLeft: 6,
+                            borderColor: 'info.main',
+                            bgcolor: 'background.paper',
+                            p: 3,
+                            borderRadius: 2,
+                            boxShadow: 1,
+                          }}
+                        >
+                          <Typography variant="h6" color="primary" gutterBottom>
+                            {action.step_number}. {action.title}
+                          </Typography>
+                          <Typography variant="body2" paragraph><strong>Why:</strong> {action.why}</Typography>
+                          <Typography variant="body2" paragraph><strong>How to do it:</strong> {action.how_to_do_it}</Typography>
+
+                          <Stack direction="row" flexWrap="wrap" gap={1} sx={{ mt: 2 }}>
+                            <strong>Tools & Materials:</strong>
+                            {action.tools_and_materials.map((item) => (
+                              <Chip key={item} label={item} size="small" color="info" variant="outlined" />
+                            ))}
+                          </Stack>
+
+                          {action.best_timing && (
+                            <Typography variant="body2" sx={{ mt: 1, color: 'success.dark' }}>
+                              Best timing: {action.best_timing}
+                            </Typography>
+                          )}
+
+                          {action.notes && (
+                            <Typography variant="body2" sx={{ mt: 1, fontStyle: 'italic', color: 'text.secondary' }}>
+                              Note: {action.notes}
+                            </Typography>
+                          )}
+                        </Box>
+                      ))}
+                    </Stack>
+
+                    <Box sx={{ mt: 5, p: 3, bgcolor: 'info.main', color: 'white', borderRadius: 2 }}>
+                      <Typography variant="subtitle1" fontWeight="bold">Ongoing Maintenance</Typography>
+                      <Typography variant="body2">{resultLawn.ongoing_maintenance}</Typography>
+                    </Box>
+                  </LawnResultCard>
+                )}
+              </Stack>
             </Stack>
 
             {/* Original Footer */}
